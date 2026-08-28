@@ -65,9 +65,10 @@ plan versions are never overwritten.
 The Agent derives a stable local device UUID, enrolls it idempotently, and asks
 Core for the device's active non-terminal session before each activity sample. A
 200 response updates the assignment, an authoritative 204 clears it, and a network
-failure preserves the last assignment so queued observations retain their
-original context. Neither enrollment nor the cached assignment makes the Agent
-authoritative.
+failure preserves the last assignment in process memory so queued observations
+retain their original context. The assignment is not stored in SQLite; after an
+Agent restart it starts empty and is fetched again. Neither enrollment nor the
+cached assignment makes the Agent authoritative.
 
 ## Dependency order
 

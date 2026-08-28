@@ -31,8 +31,9 @@ not have autonomous schedulers in V1.
 
 Emergency Release does not fabricate completion. When Core/database is reachable,
 its transaction cancels the selected Session's pending enforcement before the
-response, queues a five-minute `RELEASE_ALL`, changes every non-terminal state to
-`INTERRUPTED`, and preserves terminal states. Device-side release is asynchronous.
+response, queues a five-minute `RELEASE_ALL`, changes that Session to
+`INTERRUPTED` if it is non-terminal, and preserves it if terminal. Device-side
+release is asynchronous.
 
 ## Observation reduction
 
@@ -56,5 +57,6 @@ seconds, lock evidence, observation coverage, conflicts, and sensor freshness.
 
 Precedence is safety/uncertainty -> interruption -> idle -> hysteresis engagement.
 Each stored estimate increments `state_version` atomically.
-These derived interruptions do not mutate the authoritative ExecutionSession row;
-the Session API can remain RUNNING until an explicit session workflow changes it.
+When an observation belongs to a non-terminal session, an INTERRUPTED estimate is
+also synchronized to the authoritative ExecutionSession row in the same ingest
+transaction. Terminal Session rows are preserved.

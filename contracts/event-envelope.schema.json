@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://lifeos.local/contracts/v1/event-envelope.schema.json",
+  "title": "EventEnvelope",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "event_id", "event_type", "occurred_at", "received_at", "source", "entity_type", "entity_id", "idempotency_key", "payload", "reason_codes"],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "event_id": {"$ref": "common.schema.json#/$defs/uuid"},
+    "event_type": {"type": "string", "pattern": "^[A-Z][A-Z0-9_.]{2,127}$"},
+    "occurred_at": {"$ref": "common.schema.json#/$defs/utcTimestamp"},
+    "received_at": {"$ref": "common.schema.json#/$defs/utcTimestamp"},
+    "source": {"type": "string", "minLength": 1, "maxLength": 64},
+    "entity_type": {"type": "string", "minLength": 1, "maxLength": 64},
+    "entity_id": {"$ref": "common.schema.json#/$defs/uuid"},
+    "correlation_id": {"oneOf": [{"$ref": "common.schema.json#/$defs/uuid"}, {"type": "null"}]},
+    "causation_id": {"oneOf": [{"$ref": "common.schema.json#/$defs/uuid"}, {"type": "null"}]},
+    "idempotency_key": {"type": "string", "minLength": 8, "maxLength": 200},
+    "payload": {"type": "object", "maxProperties": 128},
+    "reason_codes": {"$ref": "common.schema.json#/$defs/reasonCodes"}
+  }
+}
+

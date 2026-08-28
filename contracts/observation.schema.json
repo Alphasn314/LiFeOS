@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://lifeos.local/contracts/v1/observation.schema.json",
+  "title": "Observation",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "observation_id", "device_id", "session_id", "kind", "observed_at", "received_at", "idempotency_key", "payload", "reason_codes"],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "observation_id": {"$ref": "common.schema.json#/$defs/uuid"},
+    "device_id": {"$ref": "common.schema.json#/$defs/uuid"},
+    "session_id": {"oneOf": [{"$ref": "common.schema.json#/$defs/uuid"}, {"type": "null"}]},
+    "kind": {"enum": ["ACTIVITY_SAMPLE", "LOCK_STATE", "SESSION_STATE", "MANUAL_CHECK_IN", "SENSOR_STATUS"]},
+    "observed_at": {"$ref": "common.schema.json#/$defs/utcTimestamp"},
+    "received_at": {"$ref": "common.schema.json#/$defs/utcTimestamp"},
+    "idempotency_key": {"type": "string", "minLength": 8, "maxLength": 200},
+    "payload": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "foreground_process": {"type": ["string", "null"], "maxLength": 128},
+        "window_title": {"type": ["string", "null"], "maxLength": 256},
+        "idle_seconds": {"type": ["integer", "null"], "minimum": 0, "maximum": 86400},
+        "is_locked": {"type": ["boolean", "null"]},
+        "manual_presence": {"enum": ["PRESENT", "ABSENT", "UNKNOWN", null]},
+        "sensor_ok": {"type": ["boolean", "null"]},
+        "client_session_state": {"type": ["string", "null"], "maxLength": 32}
+      },
+      "minProperties": 1
+    },
+    "reason_codes": {"$ref": "common.schema.json#/$defs/reasonCodes"}
+  }
+}
+

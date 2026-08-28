@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://lifeos.local/contracts/v1/error-response.schema.json",
+  "title": "ErrorResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["type", "title", "status", "detail", "error_code", "reason_codes", "correlation_id", "errors"],
+  "properties": {
+    "type": {"type": "string", "format": "uri-reference"},
+    "title": {"type": "string", "minLength": 1, "maxLength": 200},
+    "status": {"type": "integer", "minimum": 400, "maximum": 599},
+    "detail": {"type": "string", "maxLength": 2000},
+    "error_code": {"type": "string", "pattern": "^[A-Z][A-Z0-9_]{2,63}$"},
+    "reason_codes": {"$ref": "common.schema.json#/$defs/reasonCodes"},
+    "correlation_id": {"$ref": "common.schema.json#/$defs/uuid"},
+    "errors": {
+      "type": "array",
+      "maxItems": 128,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "message"],
+        "properties": {
+          "path": {"type": "string", "maxLength": 256},
+          "message": {"type": "string", "maxLength": 500}
+        }
+      }
+    }
+  }
+}
+

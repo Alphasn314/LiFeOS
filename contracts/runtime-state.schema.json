@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://lifeos.local/contracts/v1/runtime-state.schema.json",
+  "title": "RuntimeState",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "state_id", "device_id", "session_id", "estimated_at", "context", "presence", "engagement", "session_state", "device_role", "confidence", "reason_codes", "valid_until", "state_version", "features"],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "state_id": {"$ref": "common.schema.json#/$defs/uuid"},
+    "device_id": {"$ref": "common.schema.json#/$defs/uuid"},
+    "session_id": {"oneOf": [{"$ref": "common.schema.json#/$defs/uuid"}, {"type": "null"}]},
+    "estimated_at": {"$ref": "common.schema.json#/$defs/utcTimestamp"},
+    "context": {"enum": ["FOCUS", "CLASS", "BREAK", "MEAL", "TRAVEL", "FREE", "SLEEP", "RECOVERY", "EMERGENCY", "UNPLANNED"]},
+    "presence": {"enum": ["PRESENT", "ABSENT", "UNKNOWN"]},
+    "engagement": {"enum": ["ON_TASK", "OFF_TASK", "IDLE", "UNKNOWN"]},
+    "session_state": {"enum": ["PLANNED", "DUE", "STARTING", "RUNNING", "PAUSED", "INTERRUPTED", "RECOVERY", "COMPLETED", "ABORTED", "MISSED"]},
+    "device_role": {"enum": ["PRIMARY_INTERACTION", "PRIMARY_ENFORCEMENT", "SENSOR", "NOTIFICATION_ONLY", "AI_WORKER", "STANDBY"]},
+    "confidence": {"type": "number", "minimum": 0, "maximum": 1},
+    "reason_codes": {"$ref": "common.schema.json#/$defs/reasonCodes"},
+    "valid_until": {"$ref": "common.schema.json#/$defs/utcTimestamp"},
+    "state_version": {"type": "integer", "minimum": 1},
+    "features": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["window_60_coverage_seconds", "window_300_coverage_seconds", "allowed_app_ratio_60s", "blocked_app_ratio_60s", "blocked_continuous_seconds", "allowed_continuous_seconds", "idle_seconds", "sensor_conflict"],
+      "properties": {
+        "window_60_coverage_seconds": {"type": "number", "minimum": 0, "maximum": 60},
+        "window_300_coverage_seconds": {"type": "number", "minimum": 0, "maximum": 300},
+        "allowed_app_ratio_60s": {"type": "number", "minimum": 0, "maximum": 1},
+        "blocked_app_ratio_60s": {"type": "number", "minimum": 0, "maximum": 1},
+        "blocked_continuous_seconds": {"type": "number", "minimum": 0},
+        "allowed_continuous_seconds": {"type": "number", "minimum": 0},
+        "idle_seconds": {"type": ["integer", "null"], "minimum": 0},
+        "sensor_conflict": {"type": "boolean"}
+      }
+    }
+  }
+}
+

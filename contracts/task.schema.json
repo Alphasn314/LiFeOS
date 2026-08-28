@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://lifeos.local/contracts/v1/task.schema.json",
+  "title": "Task",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "task_id", "title", "description", "status", "priority", "mandatory", "deadline", "estimated_minutes", "remaining_minutes", "minimum_chunk_minutes", "activity_profile", "required_location", "required_device_capabilities", "allowed_apps", "blocked_apps", "idle_tolerance_seconds", "created_at", "updated_at", "version"],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "task_id": {"$ref": "common.schema.json#/$defs/uuid"},
+    "title": {"type": "string", "minLength": 1, "maxLength": 200},
+    "description": {"type": ["string", "null"], "maxLength": 4000},
+    "status": {"enum": ["BACKLOG", "READY", "IN_PROGRESS", "COMPLETED", "CANCELLED"]},
+    "priority": {"type": "integer", "minimum": 1, "maximum": 5},
+    "mandatory": {"type": "boolean"},
+    "deadline": {"oneOf": [{"$ref": "common.schema.json#/$defs/utcTimestamp"}, {"type": "null"}]},
+    "estimated_minutes": {"type": "integer", "minimum": 1, "maximum": 10080},
+    "remaining_minutes": {"type": "integer", "minimum": 0, "maximum": 10080},
+    "minimum_chunk_minutes": {"type": "integer", "minimum": 5, "maximum": 180},
+    "activity_profile": {"enum": ["READING", "WRITING", "CODING", "CLASS", "ADMIN", "PHYSICAL", "PASSIVE_VIDEO", "OTHER"]},
+    "required_location": {"type": ["string", "null"], "maxLength": 128},
+    "required_device_capabilities": {"type": "array", "items": {"type": "string", "maxLength": 64}, "uniqueItems": true, "maxItems": 32},
+    "allowed_apps": {"type": "array", "items": {"type": "string", "maxLength": 128}, "uniqueItems": true, "maxItems": 128},
+    "blocked_apps": {"type": "array", "items": {"type": "string", "maxLength": 128}, "uniqueItems": true, "maxItems": 128},
+    "idle_tolerance_seconds": {"type": "integer", "minimum": 30, "maximum": 7200},
+    "created_at": {"$ref": "common.schema.json#/$defs/utcTimestamp"},
+    "updated_at": {"$ref": "common.schema.json#/$defs/utcTimestamp"},
+    "version": {"type": "integer", "minimum": 1}
+  }
+}
+

@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://lifeos.local/contracts/v1/plan-version.schema.json",
+  "title": "PlanVersion",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "plan_version_id", "plan_date", "display_timezone", "revision", "based_on_plan_version_id", "trigger", "status", "algorithm_version", "created_at", "created_state_version", "parameters", "blocks", "conflicts", "reason_codes"],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "plan_version_id": {"$ref": "common.schema.json#/$defs/uuid"},
+    "plan_date": {"type": "string", "format": "date"},
+    "display_timezone": {"type": "string", "default": "Asia/Shanghai", "maxLength": 64},
+    "revision": {"type": "integer", "minimum": 1},
+    "based_on_plan_version_id": {"oneOf": [{"$ref": "common.schema.json#/$defs/uuid"}, {"type": "null"}]},
+    "trigger": {"enum": ["DAY_STARTED", "USER_REQUESTED_REPLAN", "TASK_COMPLETED_EARLY", "TASK_OVERRUN", "BLOCK_MISSED", "FIXED_EVENT_CHANGED", "USER_REPORTED_FATIGUE", "USER_REPORTED_EMERGENCY", "SESSION_ABORTED", "AVAILABLE_TIME_CHANGED"]},
+    "status": {"enum": ["FEASIBLE", "PARTIAL", "INFEASIBLE"]},
+    "algorithm_version": {"type": "string", "maxLength": 32},
+    "created_at": {"$ref": "common.schema.json#/$defs/utcTimestamp"},
+    "created_state_version": {"type": ["integer", "null"], "minimum": 1},
+    "parameters": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["focus_minutes", "break_minutes", "max_focus_minutes", "buffer_ratio", "freeze_horizon_minutes", "replan_debounce_seconds", "maximum_automatic_replans_per_hour"],
+      "properties": {
+        "focus_minutes": {"type": "integer", "minimum": 10, "maximum": 90},
+        "break_minutes": {"type": "integer", "minimum": 5, "maximum": 30},
+        "max_focus_minutes": {"type": "integer", "minimum": 10, "maximum": 120},
+        "buffer_ratio": {"type": "number", "minimum": 0, "maximum": 0.5},
+        "freeze_horizon_minutes": {"type": "integer", "minimum": 0, "maximum": 120},
+        "replan_debounce_seconds": {"type": "integer", "minimum": 0, "maximum": 3600},
+        "maximum_automatic_replans_per_hour": {"type": "integer", "minimum": 0, "maximum": 20}
+      }
+    },
+    "blocks": {
+      "type": "array",
+      "maxItems": 256,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["block_id", "kind", "title", "start_at", "end_at", "task_id", "fixed_event_id", "source_block_id", "hardness", "activity_profile", "reason_codes"],
+        "properties": {
+          "block_id": {"$ref": "common.schema.json#/$defs/uuid"},
+          "kind": {"enum": ["FIXED_EVENT", "TASK", "TRAVEL", "MEAL", "SLEEP", "BREAK", "BUFFER", "UNPLANNED"]},
+          "title": {"type": "string", "minLength": 1, "maxLength": 200},
+          "start_at": {"$ref": "common.schema.json#/$defs/utcTimestamp"},
+          "end_at": {"$ref": "common.schema.json#/$defs/utcTimestamp"},
+          "task_id": {"oneOf": [{"$ref": "common.schema.json#/$defs/uuid"}, {"type": "null"}]},
+          "fixed_event_id": {"oneOf": [{"$ref": "common.schema.json#/$defs/uuid"}, {"type": "null"}]},
+          "source_block_id": {"oneOf": [{"$ref": "common.schema.json#/$defs/uuid"}, {"type": "null"}]},
+          "hardness": {"enum": ["HARD", "REQUIRED", "SOFT"]},
+          "activity_profile": {"enum": ["READING", "WRITING", "CODING", "CLASS", "ADMIN", "PHYSICAL", "PASSIVE_VIDEO", "OTHER"]},
+          "reason_codes": {"$ref": "common.schema.json#/$defs/reasonCodes"}
+        }
+      }
+    },
+    "conflicts": {
+      "type": "array",
+      "maxItems": 128,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["code", "severity", "entity_ids", "start_at", "end_at", "required_minutes", "available_minutes", "detail"],
+        "properties": {
+          "code": {"type": "string", "pattern": "^[A-Z][A-Z0-9_]{2,63}$"},
+          "severity": {"enum": ["WARNING", "ERROR"]},
+          "entity_ids": {"type": "array", "items": {"$ref": "common.schema.json#/$defs/uuid"}, "uniqueItems": true},
+          "start_at": {"oneOf": [{"$ref": "common.schema.json#/$defs/utcTimestamp"}, {"type": "null"}]},
+          "end_at": {"oneOf": [{"$ref": "common.schema.json#/$defs/utcTimestamp"}, {"type": "null"}]},
+          "required_minutes": {"type": ["integer", "null"], "minimum": 0},
+          "available_minutes": {"type": ["integer", "null"], "minimum": 0},
+          "detail": {"type": "string", "maxLength": 500}
+        }
+      }
+    },
+    "reason_codes": {"$ref": "common.schema.json#/$defs/reasonCodes"}
+  }
+}
+

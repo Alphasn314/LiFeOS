@@ -1,0 +1,17 @@
+.venv/
+__pycache__/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.py[cod]
+*.egg-info/
+.coverage
+htmlcov/
+.env
+backend/lifeos.db
+backend/test.db
+research_data.db
+windows-agent/agent-queue.db
+web/node_modules/
+web/dist/
+artifacts/

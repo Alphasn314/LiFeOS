@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://lifeos.local/contracts/v1/command.schema.json",
+  "title": "Command",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "command_id", "target_device_id", "session_id", "decision_id", "role_lease_id", "authorized_commitment_mode", "command_type", "risk_level", "issued_at", "not_before", "expires_at", "required_state_version", "idempotency_key", "payload", "dry_run", "reason_codes"],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "command_id": {"$ref": "common.schema.json#/$defs/uuid"},
+    "target_device_id": {"$ref": "common.schema.json#/$defs/uuid"},
+    "session_id": {"$ref": "common.schema.json#/$defs/uuid"},
+    "decision_id": {"$ref": "common.schema.json#/$defs/uuid"},
+    "role_lease_id": {"oneOf": [{"$ref": "common.schema.json#/$defs/uuid"}, {"type": "null"}]},
+    "authorized_commitment_mode": {"enum": ["ADVISORY", "STANDARD", "STRICT"]},
+    "command_type": {"enum": ["SHOW_NOTIFICATION", "SHOW_CONFIRMATION", "WOULD_BLOCK", "START_BLOCK", "ENTER_RECOVERY", "RELEASE_ALL"]},
+    "risk_level": {"enum": ["SAFE", "HARD"]},
+    "issued_at": {"$ref": "common.schema.json#/$defs/utcTimestamp"},
+    "not_before": {"$ref": "common.schema.json#/$defs/utcTimestamp"},
+    "expires_at": {"$ref": "common.schema.json#/$defs/utcTimestamp"},
+    "required_state_version": {"type": "integer", "minimum": 1},
+    "idempotency_key": {"type": "string", "minLength": 8, "maxLength": 200},
+    "payload": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "message": {"type": ["string", "null"], "maxLength": 500},
+        "choices": {"type": "array", "items": {"enum": ["RETURN_TO_TASK", "BREAK_10_MINUTES", "REPLAN", "END_SESSION"]}, "uniqueItems": true, "maxItems": 4},
+        "applications": {"type": "array", "items": {"type": "string", "maxLength": 128}, "uniqueItems": true, "maxItems": 64},
+        "duration_seconds": {"type": "integer", "minimum": 0, "maximum": 1800},
+        "restriction_id": {"oneOf": [{"$ref": "common.schema.json#/$defs/uuid"}, {"type": "null"}]}
+      }
+    },
+    "dry_run": {"type": "boolean"},
+    "reason_codes": {"$ref": "common.schema.json#/$defs/reasonCodes"}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"risk_level": {"const": "HARD"}}, "required": ["risk_level"]},
+      "then": {
+        "properties": {
+          "role_lease_id": {"$ref": "common.schema.json#/$defs/uuid"},
+          "authorized_commitment_mode": {"enum": ["STANDARD", "STRICT"]}
+        }
+      }
+    }
+  ]
+}

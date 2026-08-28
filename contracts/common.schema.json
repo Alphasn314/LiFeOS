@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://lifeos.local/contracts/v1/common.schema.json",
+  "title": "LifeOS common types",
+  "$defs": {
+    "uuid": {"type": "string", "format": "uuid"},
+    "utcTimestamp": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "(Z|\\+00:00)$"
+    },
+    "reasonCodes": {
+      "type": "array",
+      "items": {"type": "string", "pattern": "^[A-Z][A-Z0-9_]{1,63}$"},
+      "minItems": 1,
+      "uniqueItems": true,
+      "maxItems": 32
+    }
+  }
+}
+

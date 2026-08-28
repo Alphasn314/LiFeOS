@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://lifeos.local/contracts/v1/role-lease.schema.json",
+  "title": "RoleLease",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "lease_id", "device_id", "role", "issued_at", "expires_at", "revoked_at", "issued_for_state_version", "version", "reason_codes"],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "lease_id": {"$ref": "common.schema.json#/$defs/uuid"},
+    "device_id": {"$ref": "common.schema.json#/$defs/uuid"},
+    "role": {"enum": ["PRIMARY_INTERACTION", "PRIMARY_ENFORCEMENT", "SENSOR", "NOTIFICATION_ONLY", "AI_WORKER", "STANDBY"]},
+    "issued_at": {"$ref": "common.schema.json#/$defs/utcTimestamp"},
+    "expires_at": {"$ref": "common.schema.json#/$defs/utcTimestamp"},
+    "revoked_at": {"oneOf": [{"$ref": "common.schema.json#/$defs/utcTimestamp"}, {"type": "null"}]},
+    "issued_for_state_version": {"type": "integer", "minimum": 1},
+    "version": {"type": "integer", "minimum": 1},
+    "reason_codes": {"$ref": "common.schema.json#/$defs/reasonCodes"}
+  }
+}
+

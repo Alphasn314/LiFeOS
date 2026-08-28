@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://lifeos.local/contracts/v1/ai-planning.schema.json",
+  "title": "AIPlanningMessage",
+  "oneOf": [
+    {"$ref": "#/$defs/request"},
+    {"$ref": "#/$defs/response"}
+  ],
+  "$defs": {
+    "request": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["message_type", "schema_version", "request_id", "requested_at", "current_time", "runtime_state", "current_plan", "current_block_id", "future_blocks", "today_progress", "unfinished_tasks", "active_incident", "policy_constraints", "reason_codes"],
+      "properties": {
+        "message_type": {"const": "AI_PLANNING_REQUEST"},
+        "schema_version": {"const": "1.0"},
+        "request_id": {"$ref": "common.schema.json#/$defs/uuid"},
+        "requested_at": {"$ref": "common.schema.json#/$defs/utcTimestamp"},
+        "current_time": {"$ref": "common.schema.json#/$defs/utcTimestamp"},
+        "runtime_state": {"type": ["object", "null"]},
+        "current_plan": {"type": ["object", "null"]},
+        "current_block_id": {"oneOf": [{"$ref": "common.schema.json#/$defs/uuid"}, {"type": "null"}]},
+        "future_blocks": {"type": "array", "maxItems": 3},
+        "today_progress": {"type": "object"},
+        "unfinished_tasks": {"type": "array", "maxItems": 256},
+        "active_incident": {"type": ["object", "null"]},
+        "policy_constraints": {"type": "object"},
+        "reason_codes": {"$ref": "common.schema.json#/$defs/reasonCodes"}
+      }
+    },
+    "response": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["message_type", "schema_version", "request_id", "response_id", "provider", "created_at", "recommendation", "conflict_explanations", "reason_codes"],
+      "properties": {
+        "message_type": {"const": "AI_PLANNING_RESPONSE"},
+        "schema_version": {"const": "1.0"},
+        "request_id": {"$ref": "common.schema.json#/$defs/uuid"},
+        "response_id": {"$ref": "common.schema.json#/$defs/uuid"},
+        "provider": {"type": "string", "maxLength": 64},
+        "created_at": {"$ref": "common.schema.json#/$defs/utcTimestamp"},
+        "recommendation": {"type": "object", "maxProperties": 64},
+        "conflict_explanations": {"type": "array", "items": {"type": "string", "maxLength": 500}, "maxItems": 64},
+        "reason_codes": {"$ref": "common.schema.json#/$defs/reasonCodes"}
+      }
+    }
+  }
+}
+

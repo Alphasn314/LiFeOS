@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://lifeos.local/contracts/v1/device-heartbeat.schema.json",
+  "title": "DeviceHeartbeat",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "heartbeat_id", "device_id", "observed_at", "agent_version", "capabilities", "latest_state_version", "core_reachable", "idempotency_key", "reason_codes"],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "heartbeat_id": {"$ref": "common.schema.json#/$defs/uuid"},
+    "device_id": {"$ref": "common.schema.json#/$defs/uuid"},
+    "observed_at": {"$ref": "common.schema.json#/$defs/utcTimestamp"},
+    "agent_version": {"type": "string", "minLength": 1, "maxLength": 32},
+    "capabilities": {"type": "array", "items": {"type": "string", "maxLength": 64}, "uniqueItems": true, "maxItems": 32},
+    "latest_state_version": {"type": ["integer", "null"], "minimum": 1},
+    "core_reachable": {"type": "boolean"},
+    "idempotency_key": {"type": "string", "minLength": 8, "maxLength": 200},
+    "reason_codes": {"$ref": "common.schema.json#/$defs/reasonCodes"}
+  }
+}
+

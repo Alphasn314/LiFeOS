@@ -1,0 +1,55 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: lifeos
+      POSTGRES_USER: lifeos
+      POSTGRES_PASSWORD: ${LIFEOS_POSTGRES_PASSWORD:?Set LIFEOS_POSTGRES_PASSWORD in .env}
+    ports:
+      - "127.0.0.1:54329:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U lifeos -d lifeos"]
+      interval: 2s
+      timeout: 3s
+      retries: 20
+    volumes:
+      - lifeos-postgres:/var/lib/postgresql/data
+
+  api:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    environment:
+      LIFEOS_DATABASE_URL: postgresql+psycopg://lifeos:${LIFEOS_POSTGRES_PASSWORD:?Set LIFEOS_POSTGRES_PASSWORD in .env}@postgres:5432/lifeos
+      LIFEOS_DISPLAY_TIMEZONE: Asia/Shanghai
+      LIFEOS_DRY_RUN: "true"
+      LIFEOS_REAL_ENFORCEMENT_ENABLED: "false"
+      LIFEOS_DEV_AUTH_TOKEN: ${LIFEOS_DEV_AUTH_TOKEN:?Set LIFEOS_DEV_AUTH_TOKEN in .env}
+      LIFEOS_CORS_ORIGINS: '["http://localhost:5173"]'
+    ports:
+      - "127.0.0.1:8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/ready', timeout=2)
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  web:
+    build:
+      context: .
+      dockerfile: web/Dockerfile
+    ports:
+      - "127.0.0.1:5173:80"
+    depends_on:
+      api:
+        condition: service_healthy
+
+volumes:
+  lifeos-postgres:

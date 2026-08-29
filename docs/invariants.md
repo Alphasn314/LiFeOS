@@ -47,3 +47,20 @@
 19. Replan triggers are limited to the allowlist in `docs/planning.md`.
 20. EventLedger is append-only by application-service/API convention. V1 does not
     install a database immutability trigger or restricted writer role.
+
+## Target V2 invariants
+
+21. The NAS-hosted Core/PostgreSQL remains the only authority. Windows and iOS
+    caches, SSH ordering, APNs delivery, and experiment output never become truth.
+22. Device SSH keys enter an allowlisted forced subsystem only. No application key
+    provides shell, PTY, SFTP, forwarding, arbitrary command, or database access.
+23. Client identity comes from the enrolled SSH principal, never a claimed
+    `device_id`; only Core issues/revokes domain role leases and iOS can never hold
+    `PRIMARY_ENFORCEMENT`.
+24. User report is authoritative for intent, availability, energy, perceived
+    demand, and valence. Behavioral evidence estimates engagement only.
+25. Human-state/emotion/experiment input may suppress, delay, soften, break, or
+    replan; it never increases intervention intensity. Nonresponse is `UNKNOWN`.
+26. Replanning preserves committed facts and history, then degrades scope to an
+    explicit `PARTIAL`/minimum viable day. It never degrades truth, drops a hard
+    obligation silently, or fabricates completion.

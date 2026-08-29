@@ -57,6 +57,33 @@ Docker Compose requires explicit database/API secrets and binds PostgreSQL, Core
 and Web published ports to `127.0.0.1`. The development credentials in
 `.env.example` are placeholders and must be replaced before startup.
 
+## Target NAS, SSH, and mobile boundary
+
+The V2 three-part topology uses a NAS-hosted Core behind trusted LAN or an
+authenticated VPN. Web uses a TLS gateway. Windows and native iOS use SSH only
+through a forced `lifeos-bridge` subsystem. Application keys cannot open a shell,
+PTY, SFTP, agent/X11 forwarding, port forwarding, or arbitrary filesystem access.
+Each Ed25519 key is independently enrolled, device-bound, scoped, rotated, revoked,
+and protected by Windows CNG/DPAPI or iOS Keychain/Secure Enclave. Clients pin the
+NAS host key. A QTS administrator session is an operator boundary, not an
+application credential.
+
+The bridge authenticates the SSH principal, replaces any claimed client identity
+with the enrolled identity, validates bounded NDJSON, and calls Core services.
+Clients never connect to PostgreSQL. Production exposes no PostgreSQL host port,
+rejects blank/default authentication, restricts CORS to the deployed Web origin,
+redacts credentials, rate-limits ingress, and keeps database/API secrets out of
+images, repositories, URLs, notifications, and logs.
+
+iOS push payloads contain only an opaque wake/event identifier and expiry. Push
+delivery is neither authorization nor committed state. Raw process/title evidence,
+human-state reports, experiments, and backups inherit explicit retention and
+access policies; experiment features expire sooner than audit facts. Device
+credentials authorize API scopes, while `DeviceRoleLease` remains a separate,
+Core-issued domain authorization. Neither a credential, NAS availability, VPN,
+nor a lease completes the missing real-enforcement guard.
+
+
 ## V1 security limitations
 
 TLS termination, per-user identity, encrypted agent queue, signed command envelopes,

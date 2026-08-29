@@ -19,6 +19,47 @@ Windows Agent -> FastAPI Core -> PostgreSQL
                     +-------> AI Provider interface (Mock in V1, optional)
 ```
 
+## Target three-part topology (V2 design)
+
+The intended personal deployment has one authority and two specialist clients:
+
+```text
+Windows software -- constrained SSH --┐
+                                      v
+native iOS app ---- constrained SSH -> NAS lifeos-bridge -> Core -> PostgreSQL
+        ^                                  ^
+        | optional opaque APNs wake hint   |
+        +----------------------------------+
+
+Web/PWA ---------------- HTTPS ------------^
+```
+
+The LifeOS body is the continuously running modular monolith and PostgreSQL on the
+NAS. It owns time, identity/authorization, plans, replans, Sessions, human-state
+reports, RuntimeState, policy, commands, experiments, audit/outbox, backup, and
+restore. PostgreSQL is private; no client-specific backend or client cache may
+become a second authority.
+
+Windows specializes in approved desktop evidence, active-Session synchronization,
+an outbound store-and-forward queue, notification/confirmation, guarded command
+adaptation, ACKs, and a user-visible local Emergency release. Native iOS is a
+SwiftUI interaction/notification companion with a stale read snapshot and a safe
+user-intent outbox. It is never a desktop sensor or `PRIMARY_ENFORCEMENT`.
+
+SSH is an identity and transport boundary, not an interactive shell. Per-device
+keys enter a forced `lifeos-bridge` subsystem with no PTY, SFTP, forwarding, or
+arbitrary command execution. The bridge invokes the same Core services used by
+HTTPS. iOS cannot maintain SSH while suspended; APNs may carry an opaque wake hint,
+but all authoritative data is subsequently fetched through SSH. Without APNs,
+foreground/opportunistic sync works but real-time background notification is not
+claimed. See ADR-0005.
+
+The first NAS production profile is deliberately single-Core. The current
+entrypoint owns migration and no singleton-job leader exists; replicas are not
+safe until migration is a serialized one-shot and scheduler/outbox ownership is
+defined.
+
+
 ## Technology
 
 - Python 3.12, FastAPI, Pydantic v2

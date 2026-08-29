@@ -60,3 +60,39 @@ Each stored estimate increments `state_version` atomically.
 When an observation belongs to a non-terminal session, an INTERRUPTED estimate is
 also synchronized to the authoritative ExecutionSession row in the same ingest
 transaction. Terminal Session rows are preserved.
+
+## Target human-state model (V2 design)
+
+Do not overload RuntimeState or collapse the person into one productivity score.
+Keep three evidence planes:
+
+1. existing observed execution: context, presence, engagement, Session state,
+   device role, confidence, validity, and reasons;
+2. explicit self-report: the user is authoritative for felt state/emotion;
+3. NAS-derived planning context: deadline pressure, feasible time, dependencies,
+   interruption load, and recent workload.
+
+Six additive dimensions are the proposed minimal core:
+
+| Dimension | Values |
+|---|---|
+| intent alignment | `ALIGNED`, `DELIBERATE_CHANGE`, `INVOLUNTARY_DIVERSION`, `UNKNOWN` |
+| next-action readiness | `READY`, `BLOCKED_DEPENDENCY`, `BLOCKED_UNCLEAR`, `BLOCKED_RESOURCE`, `UNKNOWN` |
+| interaction availability | `AVAILABLE`, `LIMITED`, `DO_NOT_INTERRUPT`, `UNKNOWN` |
+| functional energy | self-report 0 depleted .. 4 high |
+| perceived cognitive demand | self-report 0 easy .. 4 overwhelming |
+| affective valence | self-report -2 unpleasant .. +2 pleasant |
+
+Every value carries source/provenance, observed time, expiry, confidence, and reason.
+Missing/stale/conflicting input is `UNKNOWN`, never neutral. Emotion may soften,
+suppress, break, replan, or end; it cannot increase intervention. Optional arousal,
+sleep, body constraint, environment, recovery quality, and English comprehension
+remain consented experiments until they demonstrate a distinct safe action.
+Motivation/discipline scores, personality/diagnosis, named inferred emotion,
+wearable stress, content semantics, and composite wellness/productivity scores are
+not part of the model.
+
+Derived states such as `PROMPT_ELIGIBLE`, `BLOCKED_WORK`, `LOW_CAPACITY`,
+`HIGH_DEMAND`, `PLAN_AT_RISK`, `INTERVENTION_FATIGUE`, and
+`MINIMUM_VIABLE_DAY` are transparent Core decisions, not client claims or personal
+labels. See ADR-0005 for admission and removal criteria.

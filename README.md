@@ -10,6 +10,18 @@ V1 never terminates processes, edits the registry/firewall, installs autostart,
 uses a camera/microphone, or enables real blocking. `dry_run=true` and
 `real_enforcement_enabled=false` are the shipped defaults.
 
+## Target three-part design
+
+The target personal topology hosts the authoritative LifeOS Core/PostgreSQL on the
+NAS, with specialist Windows and native iOS clients. Device clients use a
+constrained SSH NDJSON subsystem rather than a general shell; Web remains HTTPS.
+The design also defines research/English/course work semantics, a minimal
+human-state model, anti-collapse replanning, a complete intervention loop, and
+consented N-of-1 dimension experiments.
+
+This is proposed V2 architecture, not a V1 implementation claim. See
+[`docs/adr/0005-nas-windows-ios-topology.md`](docs/adr/0005-nas-windows-ios-topology.md).
+
 ## Quick start with Docker Compose
 
 Prerequisites are Docker Desktop with its Linux daemon running and free local

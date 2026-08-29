@@ -73,3 +73,49 @@ minutes, available minutes, and human-readable detail. Codes include
 `HARD_EVENT_OVERLAP`, `TRAVEL_OVERLAP`, `MEAL_UNPLACEABLE`,
 `MANDATORY_WORK_UNSCHEDULED`, `DEADLINE_MISSED`, `MINIMUM_CHUNK_UNAVAILABLE`,
 `LOCATION_MISMATCH`, and `DEVICE_MISMATCH`.
+
+## Target life-domain semantics (V2 design)
+
+Research, English, and school should not use one percent-complete model or three
+separate planners. Describe work with orthogonal semantics:
+
+| Dimension | Values |
+|---|---|
+| commitment | `FIXED`, `DEADLINE`, `FLEXIBLE` |
+| progress | `MILESTONE`, `QUANTITY`, `DURATION` |
+| uncertainty | `LOW`, `MEDIUM`, `HIGH` |
+| interruptibility | `LOW`, `MEDIUM`, `HIGH` |
+| cognitive demand | `DEEP`, `NORMAL`, `LIGHT` |
+| minimum viable dose | optional bounded unit |
+| dependencies | explicit predecessor/waiting/ready graph |
+
+Research is normally milestone/dependency driven, high-uncertainty, and deep. A
+broad milestone must expose one executable next action: read, implement, run,
+inspect, analyze, write, or unblock. A running remote experiment may wait while
+another ready analysis/writing action is scheduled.
+
+English is accumulation driven. Completion is the configured duration, quantity,
+or repetition dose. A comprehension report is a noisy optional outcome used to
+select future modality; it does not retroactively fail completed practice.
+
+Classes and exam sittings are fixed events. Assignments and exam preparation are
+deadline work. Travel, preparation, and submission are explicit instead of hidden
+scheduling costs.
+
+### Anti-collapse replan
+
+Replanning is a primary loop. Starting from Core `now`, preserve completed history,
+hard course/travel/meal/recovery facts, and still-valid near-term blocks; release
+flexible blocks made impossible by a changed hard fact with an audit reason. Select
+only dependency-ready work, match cognitive demand to explicit capacity, and keep a
+small stability cost for valid old blocks.
+
+Try the full feasible remainder first. If it is impossible, return an auditable
+`PARTIAL` minimum viable day rather than abandon the day: protected course
+commitments, essential meal/travel/recovery, mandatory deadline work, configured
+minimum English dose, then one ready research progress/unblock action where
+capacity remains. If even required work is infeasible, expose explicit tradeoffs;
+never mark an impossible plan feasible or fabricate completion.
+
+These semantics require a later contract ADR, migration, and contract tests before
+implementation. ADR-0005 defines the target and N-of-1 personalization.

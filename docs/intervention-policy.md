@@ -55,3 +55,41 @@ INTERRUPTED, and appends an audit event. Device-side delivery is asynchronous;
 V1 has no user-facing offline Agent button. Ordinary Override requires a non-empty reason, cancels pending
 enforcement, issues `RELEASE_ALL`, and sets the session to PAUSED. A later resume,
 complete, abort, or replan is a separate explicit action.
+
+## Target complete intervention loop (V2 design)
+
+Intervention purpose and intensity are separate. Purpose is return, clarify next
+action, break, replan, recover, or end. The existing levels remain the compatible
+intensity axis: 0 observe, 1 ambient cue, 2 explicit choice, 3 pre-authorized
+friction (`WOULD_BLOCK` in V1), 4 bounded recovery, and 5 interrupt/replan.
+Emergency Release is out-of-band at every level.
+
+Each decision must:
+
+1. verify authoritative Session/target, state version, freshness, confidence,
+   sensor health, interaction availability, and global prompt budget;
+2. distinguish aligned involuntary diversion, deliberate goal change, and a
+   blocked/unclear/resource-limited next action;
+3. choose purpose before intensity;
+4. cap intensity by immutable commitment mode and complete authorization;
+5. de-escalate for low energy, high demand, unpleasant valence, physical limits,
+   uncertainty, recent response, `DO_NOT_INTERRUPT`, cooldown, and burden;
+6. apply hysteresis and deduplicate Windows/iOS prompts at NAS;
+7. emit one typed, expiring, idempotent command or replan event;
+8. record delivery, display, user choice, execution, Session change, and usefulness
+   as distinct outcomes;
+9. re-evaluate benefit before repeating.
+
+No new human-state dimension may be combined with `max()` to raise force.
+Nonresponse is not consent, absence, refusal, or defiance. Objective urgency cannot
+override DND/capacity guards. A suggested initial budget is one spontaneous
+check-in per 30 minutes, two proactive prompts per Session, and four per day across
+clients, with none in CLASS/TRAVEL/SLEEP/EMERGENCY or explicit
+`DO_NOT_INTERRUPT`.
+
+Constrained SSH transports typed user intent and command results; it does not
+transport client-selected shell commands. Windows retains the only future desktop
+adapter and must have a local offline Emergency UI before any real restriction.
+iOS offline Emergency remains visibly **NOT DELIVERED** until Core commits.
+Experiments may compare safe wording/timing/branch choices, but never Emergency,
+override, denial of a requested break, or real enforcement.

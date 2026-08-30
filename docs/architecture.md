@@ -35,29 +35,40 @@ Web/PWA ---------------- HTTPS ------------^
 ```
 
 The LifeOS body is the continuously running modular monolith and PostgreSQL on the
-NAS. It owns time, identity/authorization, plans, replans, Sessions, human-state
-reports, RuntimeState, policy, commands, experiments, audit/outbox, backup, and
-restore. PostgreSQL is private; no client-specific backend or client cache may
-become a second authority.
+NAS. It owns time, identity/authorization, plans, user-authorized replans, Sessions,
+current focus/fatigue/emotion, RuntimeState, policy, commands, experiments,
+audit/outbox, backup, and restore. A statically imported self-evolution module learns
+versioned duration/experienced-pressure profiles and returns immutable schedule
+advice; it never rewrites code or silently replaces a user plan. PostgreSQL is
+private; no client cache or AI proposal becomes a second authority.
 
-Windows specializes in approved desktop evidence, active-Session synchronization,
-an outbound store-and-forward queue, notification/confirmation, guarded command
-adaptation, ACKs, and a user-visible local Emergency release. Native iOS is a
-SwiftUI interaction/notification companion with a stale read snapshot and a safe
-user-intent outbox. It is never a desktop sensor or `PRIMARY_ENFORCEMENT`.
+LifeOS Windows is the single desktop process. It combines approved evidence,
+active-Session synchronization, an outbound queue, tray/choice UI, guarded command
+adaptation, and bounded facilities from the existing Self Discipline Controller.
+The serious adapter remains disabled until the full guard matrix passes. Without
+fresh NAS authority, the visible local fallback is advisory/dry-run only and cannot
+change hosts, browser policy, processes or applications.
+
+The native SwiftUI iOS client is Xcode-direct-installed with the user's free
+Personal Team. It uses pinned-key constrained SSH, local scheduled notifications,
+and explicit foreground camera Sessions. AVFoundation/Vision discards every frame
+on-device and uploads only bounded presence/orientation/focus evidence. Without a
+paid Developer Program, APNs is not a required or guaranteed channel; Windows
+remains the reminder fallback.
 
 SSH is an identity and transport boundary, not an interactive shell. Per-device
 keys enter a forced `lifeos-bridge` subsystem with no PTY, SFTP, forwarding, or
 arbitrary command execution. The bridge invokes the same Core services used by
-HTTPS. iOS cannot maintain SSH while suspended; APNs may carry an opaque wake hint,
-but all authoritative data is subsequently fetched through SSH. Without APNs,
-foreground/opportunistic sync works but real-time background notification is not
-claimed. See ADR-0005.
+HTTPS. Device transport identity is not human intent: creating an initial plan or
+replacing one requires the separate one-time `HUMAN_INTENT` envelope in ADR-0006.
+iOS cannot maintain SSH while suspended, so immediate remote plan changes are not
+guaranteed; accepted plan reminders are scheduled locally. See ADR-0005 and
+ADR-0006.
 
 The first NAS production profile is deliberately single-Core. The current
-entrypoint owns migration and no singleton-job leader exists; replicas are not
-safe until migration is a serialized one-shot and scheduler/outbox ownership is
-defined.
+entrypoint owns migration and no singleton-job leader exists; replicas are not safe
+until migration is a serialized one-shot and scheduler/outbox/learning-run ownership
+is defined.
 
 
 ## Technology

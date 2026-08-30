@@ -1,7 +1,12 @@
 # ADR-0005: NAS Core, Windows client, native iOS companion, and adaptive human state
 
-- Status: Proposed for V2; does not change the frozen V1 contracts
+- Status: Proposed for V2; amended by ADR-0006 for learning, state, intervention,
+  Windows integration, iOS camera/free signing, retention, and replan authority
 - Date: 2026-08-29
+
+> Amendment: ADR-0006 supersedes this document's human-state dimensions, fixed
+> domain minimums, replan authority, Windows enforcement integration, iOS
+> camera/free-signing notification path, retention, and self-evolution details.
 
 ## Context
 
@@ -114,8 +119,9 @@ authenticated VPN; no direct Internet port-forward is part of the design.
 A production profile must reject empty/default credentials, bind every device key to
 one device identity and permission scope, keep PostgreSQL private, restrict CORS to
 the real Web origin, redact secrets from logs, supervise containers, bound logs and
-resources, alert on readiness/backup/disk failure, and maintain an encrypted off-NAS
-backup. Core liveness and readiness remain distinct.
+resources, and alert on readiness/backup/disk failure. Per ADR-0006, V2 implements
+encrypted same-NAS snapshots/local copies and must label disaster recovery incomplete;
+it must not claim an off-NAS backup exists.
 
 ### Windows software
 
@@ -138,215 +144,69 @@ is protected by Windows CNG/DPAPI and is independently revocable.
 
 ### Native iOS companion
 
-The iOS client is a SwiftUI companion, not a wrapped PWA. Its small surfaces are
-Today, Active Session, Check-in, Inbox, and Settings. It reads the current plan and
-Session, submits start/pause/resume/complete/abort, break, ordinary override,
-replan, explicit check-in, and Emergency intent, and displays freshness and dry-run
-state. It never invents local success before Core commits.
+ADR-0006 selects an Xcode-direct-installed SwiftUI app using the user's free
+Personal Team. It reads plans/Sessions, submits typed user intents, stores only a
+stale read snapshot and safe intent outbox, and never invents success before Core.
+It is `PRIMARY_INTERACTION`/`NOTIFICATION_ONLY` at most and never desktop sensor,
+planner, lease issuer, command authority or `PRIMARY_ENFORCEMENT`.
 
-The app contains a Keychain/Secure-Enclave-backed device identity, constrained SSH
-client, typed codec, last-known-good read snapshot, durable user-intent outbox, sync
-coordinator, and optional APNs installation. Cached plans and Sessions are visibly
-stale and display-only. Only safe user-authored intents may queue; each carries an
-idempotency key, creation/expiry, and version precondition. Conflicts stop replay and
-require refresh/user resolution. Emergency queued offline is labeled **NOT
-DELIVERED**; an iPhone cannot release a Windows restriction without reaching Core.
-
-The phone is `PRIMARY_INTERACTION` or `NOTIFICATION_ONLY` at most. It is not a desktop
-sensor, planner, lease issuer, command authority, or `PRIMARY_ENFORCEMENT`. iOS cannot
-reliably run a 15-second heartbeat while suspended, so mobile liveness uses foreground
-sync recency and push-installation state, not the Windows offline threshold.
-
-APNs is optional but required for timely background alerts. Its payload contains only
-an opaque wake/event identifier and expiry. The app subsequently opens SSH and pulls
-current state. If communication is restricted to SSH alone, foreground and
-opportunistic background sync are supported, but real-time suspended-app notification
-is explicitly not guaranteed.
+The app uses pinned-key constrained SSH over the user's VPN and schedules accepted
+plan reminders locally with `UserNotifications`; APNs is not a required or
+guaranteed channel. Foreground camera Sessions process AVFoundation/Vision buffers
+on-device and discard them immediately. Only bounded coarse focus evidence may be
+uploaded. No frame/video/identity/emotion leaves the device.
 
 ## Work semantics: complete without domain-specific sprawl
 
-Do not hard-code a separate planner for every life area. A work item is described by
-orthogonal semantics:
+One planner uses commitment, progress, uncertainty, interruptibility, cognitive
+demand, dependencies, learned duration P50/P80 and experienced pressure. Research
+is milestone/dependency driven; English is divisible accumulation with optional
+noisy comprehension feedback; classes/exam sittings are fixed and assignments/exam
+preparation are deadlines.
 
-| Dimension | Values | Purpose |
-|---|---|---|
-| commitment | `FIXED`, `DEADLINE`, `FLEXIBLE` | calendar hardness |
-| progress | `MILESTONE`, `QUANTITY`, `DURATION` | definition of progress |
-| uncertainty | `LOW`, `MEDIUM`, `HIGH` | estimate range and buffer |
-| interruptibility | `LOW`, `MEDIUM`, `HIGH` | chunk/freeze behavior |
-| cognitive demand | `DEEP`, `NORMAL`, `LIGHT` | capacity matching |
-| minimum viable dose | optional bounded unit | graceful daily floor |
-| dependencies | explicit predecessor/waiting state | choose an executable next action |
-| location/device needs | existing constraints | feasibility |
-
-Examples:
-
-- Research is usually `MILESTONE`, high uncertainty, low interruptibility, deep
-  demand, and dependency-rich. A broad milestone must expose one executable next
-  action such as read, implement, run, inspect, analyze, or write. Remote training
-  may enter a waiting state while analysis or writing remains schedulable.
-- English is `DURATION` or `QUANTITY`, flexible, divisible, and accumulation based.
-  Comprehension is a noisy outcome sample, not a completion gate. The minimum viable
-  dose may be minutes, items, or repetitions.
-- Classes and exam sittings are `FIXED`; assignments and exam preparation are
-  `DEADLINE`. Travel, preparation, and submission are explicit blocks/tasks rather
-  than hidden estimates.
-
-These are proposed V2 semantics. Adding persistence/API fields requires a separate
-contract ADR, migration, and contract tests.
+No domain has a fixed daily minimum. Any domain may receive zero time by user
+choice. Self-evolution preserves the user's estimate and returns versioned schedule
+advice; it never silently replaces the plan. Persistence/API changes require ADR,
+migration and contract tests. ADR-0006 is normative for learning details.
 
 ## Human state and emotion
 
-### Evidence planes
+ADR-0006 replaces the provisional six dimensions with exactly three current,
+learning-only dimensions: focus 0--4, fatigue 0--4 and emotion -2..+2, each plus
+`UNKNOWN`, provenance, confidence and validity. Focus recognizes sustained progress
+or meaningful repeated attempts. Fatigue/emotion are user-authoritative and are
+never inferred from camera/text/app use. Sleep/body/environment enter only through
+an explicit expiring report that they affect learning now.
 
-Keep three planes separate:
+Task blockers, feasibility and device availability remain system facts rather than
+human-state dimensions. No motivation/discipline/personality/medical/composite score
+is created.
 
-1. **Observed execution:** existing context, presence, engagement, Session state,
-   device role, confidence, freshness, and reasons.
-2. **Self-reported human state:** felt capacity/emotion; the user is the source.
-3. **Derived planning context:** deadline pressure, available time, interruption
-   load, recent workload, environment fit, and dependency readiness.
+## Replanning as an explained user-only action
 
-A report always includes source, observed time, validity, confidence, and optional
-reason. No value is silently carried forever.
-
-### Minimal core ontology
-
-The V1 execution axes remain core: planned context, Session phase, presence, and
-behavioral engagement. Six additive V2 dimensions cover decisions that those axes
-cannot make. `UNKNOWN` is separate from every scale.
-
-| Dimension | Scale/source | Distinct decision | Safety rule |
-|---|---|---|---|
-| intent alignment | `ALIGNED`, `DELIBERATE_CHANGE`, `INVOLUNTARY_DIVERSION`, `UNKNOWN`; one tap after a mismatch | return versus pause/replan/end | nonresponse is `UNKNOWN`, never refusal |
-| next-action readiness | `READY`, `BLOCKED_DEPENDENCY`, `BLOCKED_UNCLEAR`, `BLOCKED_RESOURCE`, `UNKNOWN` | run a ready sibling, unblock, or define the next action | blocker is not low ability/motivation |
-| interaction availability | `AVAILABLE`, `LIMITED`, `DO_NOT_INTERRUPT`, `UNKNOWN`; explicit and time-boxed | normal, nonmodal/deferred, or suppressed delivery | contains no social identity/content |
-| functional energy | self-report 0 depleted .. 4 high | shorten, switch demand, defer, recover | high energy never raises force |
-| perceived cognitive demand | self-report 0 easy .. 4 overwhelming | decompose, buffer, switch, break | momentary demand, not ability |
-| affective valence | self-report -2 unpleasant .. +2 pleasant | soften, suppress, break/replan/end | emotion can only de-escalate |
-
-Every value has source device/type, observed time, expiry, confidence, and optional
-reason. User report is authoritative for these dimensions; behavior may estimate
-engagement only. The low-cost cadence is: energy+demand at Session start; blocker
-only when work is ambiguous; intent only after a cooled-down mismatch; outcome and
-burden at Session end; availability only when stale.
-
-Emotion tags are optional, user-selected, limited to two, and explanatory rather
-than policy-driving. Arousal, sleep sufficiency, coarse body constraint, recovery
-quality, environmental workability, and English comprehension confidence are
-experiment-only. Stress is likely redundant with demand+valence and is not core
-until an experiment proves a distinct safe action.
-
-Derived states are transparent and non-authoritative:
-
-- `PROMPT_ELIGIBLE`: valid Session/context, present, available, fresh evidence, and
-  remaining global prompt budget;
-- `BLOCKED_WORK`: next action is not ready;
-- `LOW_CAPACITY`: energy <= 1;
-- `HIGH_DEMAND`: demand >= 3;
-- `PLAN_AT_RISK`: a miss, overrun, blocker, or availability loss invalidates the
-  remaining plan;
-- `INTERVENTION_FATIGUE`: prompt budget exhausted or repeated dismiss/burden;
-- `MINIMUM_VIABLE_DAY`: the feasible degraded remainder described below.
-
-There is no composite productivity, wellness, discipline, or emotion score.
-Motivation/willpower/laziness, named emotion taxonomies, personality, diagnosis,
-wearable “stress”, exact location/social identity, camera/voice emotion inference,
-message semantics, screenshots, keystrokes, clipboard, and content surveillance are
-rejected. App switching may support engagement only, never intent or affect.
-
-### Admission and simplification rule
-
-The six dimensions above are the provisional V2 baseline selected by this
-architecture. The admission test below applies to candidate dimensions beyond those
-six; baseline dimensions remain removable/mergeable if later within-person evidence
-shows excessive burden, redundancy, or no safe action benefit. Enable an additional
-candidate only as an opt-in experiment and retain it only when all conditions hold
-within this user:
-
-1. eligible coverage >= 70%, median response <= 10 seconds, and every missing/stale
-   case becomes `UNKNOWN`;
-2. it changes a safe action and improves the relevant outcome by at least 10
-   percentage points or 0.5 on a 0-4 scale;
-3. it improves held-out decisions by >= 10% or selects a distinct beneficial action
-   in >= 15% of opportunities;
-4. it produces no DND violation, emotion-based escalation, duplicate prompt, or hard
-   schedule-truth violation;
-5. burden rises <= 0.5 and the effect direction repeats in >= 60% of matched pairs
-   across at least three weekly blocks and two relevant domains/profiles.
-
-If two dimensions have absolute within-person rank correlation >= 0.80 and action
-agreement >= 80%, keep the lower-burden one unless discordant cases have a
-prespecified benefit. Failed candidates are merged or deleted from collection,
-policy, UI, and retention—not retained as unused telemetry.
-
-### Experimental, not core by default
-
-Sleep duration/quality, hunger, pain location, social load, loneliness, noise,
-lighting, caffeine, exercise, time of day, interruption count, task interest,
-self-efficacy, novelty, comprehension, and location comfort are candidate features.
-Many are redundant, sensitive, costly, or only useful for one domain. They stay in
-an experiment/profile namespace until evidence shows a stable decision benefit.
-Medical symptoms, diagnoses, inferred personality, camera emotion recognition,
-message sentiment, and content surveillance are rejected.
-
-## Replanning as the anti-collapse loop
-
-A replan follows this order:
-
-1. read the latest committed plan, fixed commitments, Session, explicit human-state
-   report, dependency state, and available interval;
-2. preserve completed work and valid near-term frozen blocks, but release blocks
-   made impossible by a changed hard fact;
-3. place classes, exam sittings, hard deadlines, meals, travel, and recovery
-   constraints;
-4. select only dependency-ready work and match cognitive demand to capacity;
-5. retain a small stability cost for still-valid old blocks;
-6. build and audit a feasible remaining plan when possible;
-7. if full completion is impossible, try a **minimum viable day**; if required work
-   still cannot fit, return an `INFEASIBLE` conflict/tradeoff report rather than
-   declaring the day abandoned or fabricating feasibility.
-
-The initial minimum viable day order is: required course/exam commitments,
-essential meal/travel/recovery, mandatory deadline work, the English minimum dose,
-then one executable research progress/unblock action where capacity remains. This
-is a policy to test and personalize, not a permanent universal rule. Carry-over is
-explicit, bounded, and visible; optional work can be `PARTIAL` without moral
-failure.
+Core may project progress but never automatically replan. It first simulates
+permitted compression and whole flexible-block deferment/removal. If the remainder
+is feasible, it does not recommend replan. Only severe unrecoverable deviation
+creates a deduplicated `REPLAN_RECOMMENDED` explanation on Windows/iOS/Web. An
+authenticated explicit human intent may create the initial daily plan; only
+`REQUEST_REPLAN` with the separate ADR-0006 `HUMAN_INTENT` proof may replace it.
+AI, services, sensors and ordinary device principals cannot submit either action.
 
 ## Complete intervention loop
 
-Intervention intensity and intervention purpose are separate. The purpose is one of
-return, clarify next action, break, replan, recover, or end. The existing numeric
-levels remain compatible:
+LifeOS Windows owns light reminder, native choice and future friction surfaces.
+NAS AI may propose timing/wording only within deterministic ceilings. Existing Self
+Discipline Controller facilities supply bounded hosts/HKLM/process backends after
+the full guard matrix passes.
 
-| Level | Target behavior | Safety cap |
-|---:|---|---|
-| 0 | observe/log nothing disruptive | default for unknown/stale evidence |
-| 1 | ambient cue | cooldown; no response required |
-| 2 | explicit choice: return/break/replan/end | preserve user control |
-| 3 | pre-authorized friction; V1 `WOULD_BLOCK` only | mode >= STANDARD, fresh state |
-| 4 | bounded recovery workflow; V1 policy-only | STRICT plus complete guard |
-| 5 | interrupt Session and replan | no coercive extension |
+Authority is local Emergency > NAS rest/release/terminal > fully guarded NAS
+restriction > optional advisory/dry-run local fallback. BREAK/PAUSED/MEAL/TRAVEL/RECOVERY/
+EMERGENCY, terminal/no Session, stale authority, override and local Emergency
+synchronously release all owned restrictions. A watched work application cannot
+re-lock during rest.
 
-Every decision executes the same pipeline:
-
-1. verify Session, target, state version, freshness, confidence, and sensor health;
-2. determine need/purpose from execution evidence and user report;
-3. cap intensity by immutable commitment mode and complete authorization;
-4. de-escalate for distress, physical constraint, overload, uncertainty, recent
-   response, and cooldown;
-5. apply hysteresis and a per-Session prompt budget;
-6. emit one typed expiring idempotent command or a replan intent;
-7. collect delivery, display, choice, and execution as distinct outcomes;
-8. update Session/replan only after Core commits; audit input and result;
-9. evaluate whether the intervention helped before repeating.
-
-Emotion never moves a decision upward. Ignoring a prompt is not proof of consent,
-absence, or defiance. Escalation requires fresh behavioral evidence and cannot skip a
-level solely because prompts were missed. Emergency Release is out-of-band, available
-at every level, and never waits for ordinary OCC/policy. Windows must provide a local
-offline release UI before any real restriction exists.
+Friction F1--F4 and Recovery R1--R3 remain explicit user decisions in ADR-0006.
+Emergency, real block, break denial and user-only replan are never randomized.
 
 ## SSH constrained protocol
 
@@ -429,39 +289,14 @@ Recovery order is PostgreSQL, migration head, Core readiness, bridge, then clien
 Clients replace stale snapshots from Core and drain allowed outbound rows. No cache is
 promoted during recovery.
 
-## Consented N-of-1 social experiments
+## Consented N-of-1 experiments
 
-No experiment has been run yet. These are opt-in, time-bounded, reversible design
-hypotheses; none can authorize enforcement. Use a seven-day observation run-in,
-randomized/counterbalanced within-person periods where safe, policy-version logging,
-and domain/profile stratification. Never manufacture a miss or deny a requested
-break.
-
-| Experiment | Comparison | Primary graduation signal |
-|---|---|---|
-| check-in cadence | start/end only versus one event-triggered question | response >= 70%, median <= 10 s, burden increase <= 0.5 |
-| intent alignment | intent tap versus neutral return notice at eligible mismatch | distinct action >= 15% and unhelpful prompts fall >= 10 points |
-| energy/chunk | shorter user-selectable chunk versus profile default at energy 0-2 | goal outcome +10 points or energy decline improves 0.5 in >= 60% pairs |
-| demand versus blocker | decompose/break versus dependency/resource/clarify question | blocker selects a distinct action >= 15% and helpfulness improves 0.5 |
-| affect de-escalation | supportive single choice versus defer/silence at valence <= -1 | unhelpful prompts fall >= 10 points without worse goal outcome |
-| cross-client availability | context-only versus explicit timed availability + NAS dedupe | bad-time prompts fall >= 50%, duplicate prompts = 0, entry <= 5 s |
-| recovery timing | offer break now versus next natural boundary | next-period energy +0.5 or progress +10 points without more abort/burden |
-| anti-collapse MVD | full replan versus full replan plus immediate minimum viable day | accepted feasible remainder within 5 min +20 points or abandoned-day rate -10 points |
-| research next action | broad milestone versus one dependency-ready action | lower start latency and blocked-session rate |
-| English dose | duration versus quantity/repetition target | adherence improves; comprehension remains an optional noisy sample |
-
-Universal stop conditions are user withdrawal/emergency, privacy or SSH-boundary
-violation, any DND prompt, unreliable delivery, two “made worse” ratings in one
-week, burden >= 3 on two consecutive days, protected-course failure, or observed
-sleep/recovery harm. Emergency, override, and real enforcement are never randomized.
-Too few opportunities yields `INSUFFICIENT_EVIDENCE`; thresholds and safety rules
-are not relaxed.
-
-NAS owns experiment assignment, dedupe, global prompt budget, analysis, and audit.
-Raw experiment features use shorter retention than business/audit facts. A suggested
-initial budget is at most one spontaneous check-in per 30 minutes, two proactive
-prompts per Session, and four per day across Windows and iOS, with none in
-`DO_NOT_INTERRUPT`, `CLASS`, `TRAVEL`, `SLEEP`, or `EMERGENCY`.
+The user's broad permission covers safe advisory experiments only. Every experiment
+has a manifest, fields, duration, retention, bounded arms, deterministic ceilings,
+stop conditions and rollback. Experiments may tune advisory estimates, pressure
+priors, check-in timing and reminder wording; they cannot alter code, credentials,
+schemas, leases, hard guards, retention, camera frame handling, Emergency behavior
+or user-only replan. ADR-0006 is normative.
 
 ## Consequences and non-goals
 

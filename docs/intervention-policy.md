@@ -56,40 +56,62 @@ V1 has no user-facing offline Agent button. Ordinary Override requires a non-emp
 enforcement, issues `RELEASE_ALL`, and sets the session to PAUSED. A later resume,
 complete, abort, or replan is a separate explicit action.
 
-## Target complete intervention loop (V2 design)
+## Target LifeOS Windows intervention loop (V2 design)
 
-Intervention purpose and intensity are separate. Purpose is return, clarify next
-action, break, replan, recover, or end. The existing levels remain the compatible
-intensity axis: 0 observe, 1 ambient cue, 2 explicit choice, 3 pre-authorized
-friction (`WOULD_BLOCK` in V1), 4 bounded recovery, and 5 interrupt/replan.
-Emergency Release is out-of-band at every level.
+LifeOS Windows merges the existing Agent with bounded facilities from Self
+Discipline Controller V4.2. Purpose and intensity remain separate:
 
-Each decision must:
+| Level | LifeOS Windows surface |
+|---:|---|
+| 0 | observe; no disturbance |
+| 1 | tray/native light reminder |
+| 2 | native choice: return, break, override, request replan, end |
+| 3 | optional friction using typed delay plus bounded site/process restriction |
+| 4 | user-selected Recovery design; not yet fixed |
+| 5 | explicit severe-deviation/replan recommendation; never automatic replan |
 
-1. verify authoritative Session/target, state version, freshness, confidence,
-   sensor health, interaction availability, and global prompt budget;
-2. distinguish aligned involuntary diversion, deliberate goal change, and a
-   blocked/unclear/resource-limited next action;
-3. choose purpose before intensity;
-4. cap intensity by immutable commitment mode and complete authorization;
-5. de-escalate for low energy, high demand, unpleasant valence, physical limits,
-   uncertainty, recent response, `DO_NOT_INTERRUPT`, cooldown, and burden;
-6. apply hysteresis and deduplicate Windows/iOS prompts at NAS;
-7. emit one typed, expiring, idempotent command or replan event;
-8. record delivery, display, user choice, execution, Session change, and usefulness
-   as distinct outcomes;
-9. re-evaluate benefit before repeating.
+NAS AI may choose check-in/reminder timing only within deterministic configurable
+ceilings; no daily count is fixed yet. It cannot authorize enforcement or replan.
 
-No new human-state dimension may be combined with `max()` to raise force.
-Nonresponse is not consent, absence, refusal, or defiance. Objective urgency cannot
-override DND/capacity guards. A suggested initial budget is one spontaneous
-check-in per 30 minutes, two proactive prompts per Session, and four per day across
-clients, with none in CLASS/TRAVEL/SLEEP/EMERGENCY or explicit
-`DO_NOT_INTERRUPT`.
+### Authority and automatic release
 
-Constrained SSH transports typed user intent and command results; it does not
-transport client-selected shell commands. Windows retains the only future desktop
-adapter and must have a local offline Emergency UI before any real restriction.
-iOS offline Emergency remains visibly **NOT DELIVERED** until Core commits.
-Experiments may compare safe wording/timing/branch choices, but never Emergency,
-override, denial of a requested break, or real enforcement.
+```text
+immediate local Emergency Release
+  > authoritative NAS rest/release/terminal state
+  > valid fully guarded NAS restriction command
+  > visible local standalone advisory/dry-run fallback
+  > ordinary notification
+```
+
+A NAS message is insufficient. A real restriction requires correct target, current
+Session, commitment preauthorization, command-row `dry_run=false`, fresh state/TTL,
+idempotency, exact blocklist and bounded duration, online Core/device, current
+unrevoked `PRIMARY_ENFORCEMENT` lease, local capability, rollback readiness and
+audit. Real enforcement remains unadvertised/unreachable until the complete test
+matrix passes.
+
+`BREAK`, `PAUSED`, `MEAL`, `TRAVEL`, `RECOVERY`, `EMERGENCY`, terminal/no Session,
+expired command/lease, stale Core, override, and local Emergency synchronously
+remove every NAS-owned restriction. A watched work program cannot re-lock during
+those states. Restrictions also have monotonic local expiry and restart
+reconciliation.
+
+When NAS has no fresh authoritative assignment, an explicitly enabled, clearly
+labelled local fallback may run only timers, focus UI, reminders and `WOULD_BLOCK`
+dry-run evaluation. It cannot change hosts, browser policy, processes or applications
+because online Core, Session, lease and preauthorization are mandatory for a hard
+action. It never extends stale NAS restrictions; NAS rest/release wins when authority
+returns.
+
+### Friction and Recovery choices still requiring user selection
+
+Friction candidates are F1 notification/choice, F2 short delay plus typed reason,
+F3 the existing 60-second phrase plus configured site/process block, and F4 F3 plus
+Windows Hello local presence verification. Typed text authenticates intent only;
+it cannot change Core state or delay Emergency.
+
+Recovery candidates are R1 release all plus a 10-minute restorative break and
+return/replan/end choice (recommended first), R2 a user-confirmed 15-minute
+reduced-distraction allowlist with automatic expiry, or R3 no automated Recovery
+in the first integrated release. Emergency, real blocking, break denial and
+user-only replan are never randomized.

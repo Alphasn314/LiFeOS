@@ -61,38 +61,50 @@ When an observation belongs to a non-terminal session, an INTERRUPTED estimate i
 also synchronized to the authoritative ExecutionSession row in the same ingest
 transaction. Terminal Session rows are preserved.
 
-## Target human-state model (V2 design)
+## Target learning-state model (V2 design)
 
-Do not overload RuntimeState or collapse the person into one productivity score.
-Keep three evidence planes:
+Do not collapse the person into one productivity score. ADR-0006 narrows the V2
+human-state core to three current, learning-only dimensions. `UNKNOWN` is separate
+from every scale; every report carries provenance, observed time, expiry, confidence
+and reason codes.
 
-1. existing observed execution: context, presence, engagement, Session state,
-   device role, confidence, validity, and reasons;
-2. explicit self-report: the user is authoritative for felt state/emotion;
-3. NAS-derived planning context: deadline pressure, feasible time, dependencies,
-   interruption load, and recent workload.
+### Focus: 0--4 plus `UNKNOWN`
 
-Six additive dimensions are the proposed minimal core:
+Focus means sustained task-directed progress or serious task-directed attempts:
 
-| Dimension | Values |
-|---|---|
-| intent alignment | `ALIGNED`, `DELIBERATE_CHANGE`, `INVOLUNTARY_DIVERSION`, `UNKNOWN` |
-| next-action readiness | `READY`, `BLOCKED_DEPENDENCY`, `BLOCKED_UNCLEAR`, `BLOCKED_RESOURCE`, `UNKNOWN` |
-| interaction availability | `AVAILABLE`, `LIMITED`, `DO_NOT_INTERRUPT`, `UNKNOWN` |
-| functional energy | self-report 0 depleted .. 4 high |
-| perceived cognitive demand | self-report 0 easy .. 4 overwhelming |
-| affective valence | self-report -2 unpleasant .. +2 pleasant |
+| Value | Meaning |
+|---:|---|
+| 0 | valid absence or sustained unrelated engagement |
+| 1 | fragmented, mostly unrelated engagement |
+| 2 | intermittent task attempts with substantial switching |
+| 3 | sustained task attempts or steady progress |
+| 4 | deep continuous work with steady progress or repeated meaningful attempts |
 
-Every value carries source/provenance, observed time, expiry, confidence, and reason.
-Missing/stale/conflicting input is `UNKNOWN`, never neutral. Emotion may soften,
-suppress, break, replan, or end; it cannot increase intervention. Optional arousal,
-sleep, body constraint, environment, recovery quality, and English comprehension
-remain consented experiments until they demonstrate a distinct safe action.
-Motivation/discipline scores, personality/diagnosis, named inferred emotion,
-wearable stress, content semantics, and composite wellness/productivity scores are
-not part of the model.
+No visible progress does not imply low focus: repeated research/debug/experiment
+attempts may support 3/4 when a typed task adapter records valid attempt events.
+NAS fuses bounded Windows engagement, user/task-adapter progress/attempt events,
+Session context, and coarse iOS camera aggregates. Camera presence alone is not
+focus. AI returns a proposal, confidence and reasons; deterministic fusion rejects
+stale/conflicting/low-coverage evidence.
 
-Derived states such as `PROMPT_ELIGIBLE`, `BLOCKED_WORK`, `LOW_CAPACITY`,
-`HIGH_DEMAND`, `PLAN_AT_RISK`, `INTERVENTION_FATIGUE`, and
-`MINIMUM_VIABLE_DAY` are transparent Core decisions, not client claims or personal
-labels. See ADR-0005 for admission and removal criteria.
+### Fatigue: 0--4 plus `UNKNOWN`
+
+0 is fresh, 1 mild cost, 2 noticeable fatigue, 3 high fatigue with unreliable
+sustained work, and 4 functionally unable to continue the current learning block.
+User report is authoritative. Performance decay may request a check-in but cannot
+assign fatigue. Fatigue can shorten/defer/release/recommend rest; it never raises
+intervention.
+
+### Current emotion: -2..+2 plus `UNKNOWN`
+
+-2 is very angry/sad/unwilling now, -1 negative/reluctant, 0 neutral, +1
+positive/willing, and +2 passionate/strong willingness. Emotion is self-reported
+for the current time only. It is never inferred from camera, text, app use or
+productivity and does not create long-term subject-confidence/enthusiasm profiles.
+It may soften or release; it never raises force.
+
+Blocker/dependency, schedule feasibility, device availability and objective urgency
+remain task/system facts, not extra human-state dimensions. Sleep, body and
+environment enter only as an explicit, expiring user report that they affect
+learning now. No motivation/discipline/personality/medical/composite score is
+created.

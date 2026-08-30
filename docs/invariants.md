@@ -50,17 +50,32 @@
 
 ## Target V2 invariants
 
-21. The NAS-hosted Core/PostgreSQL remains the only authority. Windows and iOS
-    caches, SSH ordering, APNs delivery, and experiment output never become truth.
-22. Device SSH keys enter an allowlisted forced subsystem only. No application key
-    provides shell, PTY, SFTP, forwarding, arbitrary command, or database access.
-23. Client identity comes from the enrolled SSH principal, never a claimed
-    `device_id`; only Core issues/revokes domain role leases and iOS can never hold
-    `PRIMARY_ENFORCEMENT`.
-24. User report is authoritative for intent, availability, energy, perceived
-    demand, and valence. Behavioral evidence estimates engagement only.
-25. Human-state/emotion/experiment input may suppress, delay, soften, break, or
-    replan; it never increases intervention intensity. Nonresponse is `UNKNOWN`.
-26. Replanning preserves committed facts and history, then degrades scope to an
-    explicit `PARTIAL`/minimum viable day. It never degrades truth, drops a hard
-    obligation silently, or fabricates completion.
+21. NAS Core/PostgreSQL is the sole authority. Windows/iOS caches, SSH order,
+    learning proposals and local fallback never become business truth.
+22. Self-evolution updates only versioned parameters/profiles/advice. AI never
+    rewrites production code, chooses leases/blocklists/retention, or submits replan.
+23. Device SSH keys enter an allowlisted forced subsystem only. No application key
+    provides shell, PTY, SFTP, forwarding, arbitrary command or database access.
+24. Focus/fatigue/emotion proposals always include provenance, confidence, validity
+    and `UNKNOWN`. Fatigue/emotion are user-authoritative and camera never infers
+    them.
+25. iOS camera buffers are processed transiently on-device and never retained or
+    uploaded; only bounded coarse evidence may leave the Vision boundary.
+26. Any hard action requires active Session preauthorization, fresh matching role
+    lease, online Core/device, exact blocklist/duration authorization, current
+    state/TTL/idempotency, rollback readiness, audit and immediate local Emergency.
+27. NAS rest/release/terminal state and local Emergency synchronously remove every
+    owned restriction and cannot be overridden by a watched application.
+28. Core may recommend replan only after severe deviation remains infeasible after
+    allowed compression/deferment. Authenticated human intent may create an initial
+    daily plan; only `REQUEST_REPLAN` may replace the named current revision.
+29. No domain has a fixed daily quota. Schedule learning preserves user choices and
+    returns advice, never a silent replacement.
+30. Personal history/profile/revision summaries remain date-partitioned and
+    permanent per user decision; camera frames never enter history and test data is
+    removed after release freeze.
+31. Device transport authentication is insufficient for plan creation or revision.
+    A fresh, one-time, OS-presence-confirmed `HUMAN_INTENT` capability is required;
+    AI, service, sensor and ordinary device principals are denied.
+32. Without fresh online Core/Session/lease/preauthorization, the local fallback is
+    advisory/dry-run only and cannot apply any site, process or application policy.

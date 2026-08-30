@@ -24,6 +24,20 @@ Run formatting, type checking, and the tests relevant to the changed directory.
 Mocks must be named as mocks. Do not claim an acceptance item passed without a
 recorded command. Real enforcement stays feature-flagged off and `dry_run=true`.
 
+## GitHub-first reuse policy
+
+- Before implementing a module, check the platform/framework API and then search
+  maintained GitHub source for a smaller reusable implementation.
+- Verify source, license, exact tag/commit, path activity, dependencies, security
+  posture, and failure behavior before copying or adding a dependency.
+- Record `ADOPT`, `ADAPT`, `STUDY_ONLY`, or `REJECT`, pin provenance, retain required
+  notices, and add denial/timeout/replay/rollback tests around the LifeOS-owned
+  typed interface.
+- Never copy unlicensed snippets/gists. Default-reject GPL/AGPL and unsuitable LGPL
+  coupling unless an explicit review approves it. Reuse never weakens Core
+  authority, user-only replan, camera-frame privacy, or hard-action guards.
+
+
 ## Safety rules
 
 - Core is the sole source of truth; agents never promote themselves to primary.

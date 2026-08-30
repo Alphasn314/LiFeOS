@@ -4,25 +4,31 @@ V2 is documented now but is not part of the V1 implementation claim.
 
 | ID | Gate |
 |---|---|
-| V2-01 | NAS profile starts private PostgreSQL, performs exactly one successful migration, then marks one Core ready; DB/migration failure prevents readiness |
-| V2-02 | PostgreSQL has no client-reachable port; Web has approved TLS ingress; Windows/iOS reach only the constrained SSH subsystem over trusted LAN/VPN |
-| V2-03 | Operator-authorized one-time pairing verifies the NAS host fingerprint, binds a client-generated public key to one scoped device, and installs only a forced subsystem; unauthenticated self-enrollment and shell/PTY/SFTP/forwarding/database access are rejected |
-| V2-04 | The SSH NDJSON bridge rejects wrong device/version/sequence, oversized/extra-field payloads, replay conflicts, invalid time, and non-allowlisted operations |
-| V2-05 | Core-issued role leases expire/revoke/handoff; iOS can never receive `PRIMARY_ENFORCEMENT`; no client self-promotes |
-| V2-06 | Windows signed installation provides approved evidence, encrypted bounded outbox, active-session sync, command validation/ACK, prompt dedupe, and local offline Emergency |
-| V2-07 | After operator-authorized pairing, native SwiftUI iOS syncs over its pinned device SSH identity, displays authoritative freshness, and performs online plan/Session/check-in/break/replan/override/Emergency intents without local success fabrication |
-| V2-08 | iOS stale snapshot is display-only; safe intent replay preserves idempotency/expiry/version and stops for user-visible OCC conflict |
-| V2-09 | APNs carries only an opaque expiring wake hint; loss/delay causes no state loss and authoritative data is fetched over SSH |
-| V2-10 | Human-state reports preserve source/time/expiry/confidence/UNKNOWN and implement only intent, blocker, availability, energy, cognitive demand, and valence as core additions |
-| V2-11 | Emotion, low capacity, overload, and uncertainty can only de-escalate/suppress/break/replan; missing/nonresponse never increases intervention |
-| V2-12 | Research milestone/dependency, English dose, and course fixed/deadline semantics share one planner and never collapse into one percent-complete score |
-| V2-13 | A miss/block/overrun produces a feasible remainder, an explicit minimum viable day, or an `INFEASIBLE` conflict/tradeoff report within five minutes when Core/PostgreSQL are ready, or within five minutes after authoritative connectivity returns; fixed facts never move, hard obligations never disappear, and completion is never fabricated |
-| V2-14 | The complete intervention loop enforces freshness, commitment cap, cooldown/hysteresis, NAS-wide dedupe, prompt budget, typed outcomes, and usefulness feedback |
-| V2-15 | Candidate dimensions beyond the V2-10 provisional core six are opt-in, time-bounded, removable, retention-bounded, and graduate only through the ADR-0005 observable/actionable/nonredundant/safe/low-cost criteria |
-| V2-16 | Real blocklist remains off by default and cannot enable until session preauthorization, fresh lease, online Core/device, blocklist/duration authorization, local release, and complete guard/failure tests pass |
-| V2-17 | Recovery Mode automatically expires within 15 minutes; Emergency Release works during every phase and terminal Sessions never revive |
-| V2-18 | AI queue/worker and optional Codex adapter remain schema-bound data providers and degrade without changing deterministic planning, intervention, or Emergency |
-| V2-19 | Encrypted logical PostgreSQL backup is retained outside live PGDATA and off-NAS; isolated restore reaches migration head and representative plan/session/event/command relations |
-| V2-20 | NAS reboot, Core/DB/SSH/VPN loss, disk full, migration failure, stale command, clock skew, credential revocation, backup-target loss, APNs provider submission/rejection error, and missing post-push sync/ACK by a bounded deadline fail closed and generate operator-visible evidence |
-| V2-21 | Whole-tree and runtime inspection prove no keystrokes, clipboard, screenshots, microphone, video, camera emotion, content surveillance, medical/personality inference, or emotion-based coercion |
+| V2-01 | NAS profile starts private PostgreSQL, performs exactly one serialized migration, then marks one Core/learning scheduler ready; DB/migration failure prevents readiness |
+| V2-02 | VPN is the normal remote boundary; Web uses approved TLS and Windows/iOS reach only a pinned-key forced SSH subsystem; PostgreSQL has no client port |
+| V2-03 | Operator pairing binds one client-generated public key to one scoped device and rejects self-enrollment, shell, PTY, SFTP, forwarding, arbitrary command and database access |
+| V2-04 | Self-evolution is an allowlisted static Core module with immutable manifests/revisions, deterministic validation, audit and rollback; runtime source mutation/download/install is impossible |
+| V2-05 | Task feedback stores planned/active/wall time, partial/completed progress, meaningful attempts, experienced pressure and current-state provenance with idempotency |
+| V2-06 | Duration prediction supplies hierarchical cold start, online update, P50/P80/confidence/evidence count, censored partial handling, pre-update error and rollback without silently replacing user estimates |
+| V2-07 | Experienced pressure 0-4 learns from user feedback and bounded AI proposals, remains distinct from deadline pressure, and affects ordering/recovery spacing only |
+| V2-08 | Next-day advice preserves the submitted plan, explains minimal changes and waits for user acceptance; an explicit authenticated `CREATE_DAILY_PLAN`/`ACCEPT_SCHEDULE_ADVICE` may create an initial plan only; any domain may receive zero time |
+| V2-09 | Only severe deviation that remains infeasible after permitted compression/deferment creates a deduplicated recommendation; only authenticated `REQUEST_REPLAN` may replace the named current revision, and tests show EventOrchestrator, the Session break route and generic/non-user generation cannot create a replacement PlanVersion |
+| V2-10 | Core human state is exactly focus 0-4, fatigue 0-4 and current emotion -2..+2 plus `UNKNOWN`; sleep/body/environment enter only through explicit expiring impact reports |
+| V2-11 | Focus recognizes sustained progress or meaningful repeated attempts and fuses bounded task adapters, Windows evidence and coarse iOS evidence with coverage/conflict/freshness guards |
+| V2-12 | Fatigue and emotion are user-authoritative, current-only and never inferred from camera/text/app use or used to increase force |
+| V2-13 | Xcode free-personal-team iOS installs on the user's iPhone, pins SongNAS SSH, schedules accepted-plan local notifications and documents provisioning expiry/no APNs guarantee |
+| V2-14 | iOS camera is explicit foreground-only and uploads no frame/video/embedding/identity/emotion; denial/suspension/occlusion/removal/failure becomes `UNKNOWN` |
+| V2-15 | Phone evidence reaches NAS, Core decides, and Windows independently validates/reminds; Windows remains functional when the phone is missing |
+| V2-16 | One signed LifeOS Windows app merges tray, sensor, encrypted bounded queue, transport, choice UI, advisory/dry-run local fallback, Recovery tool, installer/autostart/update/uninstaller and exact owned-policy reconciliation |
+| V2-17 | NAS real restrictions remain unadvertised until Session preauthorization, command dry-run off, state/TTL/idempotency, exact blocklist/duration, online Core/device, fresh lease, rollback/audit and full guard tests pass |
+| V2-18 | `BREAK/PAUSED/MEAL/TRAVEL/RECOVERY/EMERGENCY`, terminal/no Session, stale/expired authority, override and local Emergency synchronously release restrictions and watched apps cannot re-lock |
+| V2-19 | Without fresh NAS authority the visible optional standalone fallback is limited to timer/focus UI/reminders/`WOULD_BLOCK`; it cannot change hosts, browser policy, processes or applications |
+| V2-20 | Friction and Recovery are selected from documented F1-F4/R1-R3 options before real enablement; Emergency, real block, break denial and replan are never randomized |
+| V2-21 | NAS AI proposes bounded features/estimates/pressure/check-in/reminder choices only; deterministic ceilings and guards own execution |
+| V2-22 | Safe experiments have manifests, stop/rollback/retention rules and cannot alter code, credentials, hard guards, Emergency, camera retention or user-only replan |
+| V2-23 | Detailed context reads the latest 72 hours by default; permanent summaries/profiles/revisions are encrypted/date-partitioned/exportable, camera frames never persist, frozen-release test data is deleted, and no gate assumes a raw-evidence retention period before user selection |
+| V2-24 | Maintenance runs only 03:00-07:00 local and never interrupts an active Session without an explicit transition |
+| V2-25 | Same-NAS snapshots/local backup are tested and explicitly labelled one failure domain; disaster recovery remains incomplete until off-NAS backup exists |
+| V2-26 | A reviewed API/source allowlist plus instrumented storage, network, camera-lifecycle and command-adapter tests cover every enumerated success/failure path and reject keystroke, clipboard, screenshot, microphone, frame/video/embedding, camera emotion/identity, content-surveillance, medical/personality, generic-shell and AI-enforcement payloads/actions |
+| V2-27 | Plan creation/revision requires a fresh one-time interactive `HUMAN_INTENT` envelope with expected plan revision; tests accept OS-confirmed user action and deny stale/replayed/wrong-revision envelopes plus AI, service, sensor and ordinary device principals |
 

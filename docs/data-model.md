@@ -47,3 +47,21 @@ publisher/dispatcher is not included; current in-process workflows and client
 polling perform the relevant delivery. Treat external-bus publication and retry
 operations as V2 work rather than assuming every pending row is automatically
 drained.
+
+## Target V2 self-evolution entities
+
+These entities are proposed by ADR-0006 and are not present in the V1 migration:
+
+| Entity | Purpose and principal fields |
+|---|---|
+| TaskExecutionFeedback | append-only task/Session/plan identity, planned/active/wall minutes, completion/progress/attempts, focus/fatigue/emotion, experienced pressure, interruptions, provenance, idempotency and user correction |
+| TaskLearningProfile | versioned global/domain/subtype/task hierarchy, duration posterior/P50/P80/confidence, pressure distribution, effective sample count, cold-start source, user override and selected model revision |
+| EstimateRevision | immutable prior profile version, evidence IDs, bounded feature vector, algorithm version, new parameters/predictions/confidence, validation and reason codes |
+| ScheduleAdvice | immutable original user plan, learned estimates, proposed changes, feasibility/conflicts, explanation and `PENDING/ACCEPTED/REJECTED/EXPIRED` outcome; never itself a PlanVersion |
+| LearningRun | immutable input cursor/profile versions, provider/model proposal metadata, validation, output revisions, timing, causation and errors |
+| CurrentStateReport | append-only focus 0-4, fatigue 0-4, emotion -2..+2 or `UNKNOWN`, provenance/confidence/validity and explicit auxiliary learning-impact reason |
+
+`daily_summaries` supplies permanent readable history. Detailed decision context
+uses the latest 72 hours by default; long-term profile sufficient statistics are
+loaded explicitly. High-frequency evidence is partitioned by date and never mixed
+with test fixtures.

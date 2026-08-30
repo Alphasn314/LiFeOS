@@ -74,10 +74,10 @@ minutes, available minutes, and human-readable detail. Codes include
 `MANDATORY_WORK_UNSCHEDULED`, `DEADLINE_MISSED`, `MINIMUM_CHUNK_UNAVAILABLE`,
 `LOCATION_MISMATCH`, and `DEVICE_MISMATCH`.
 
-## Target life-domain semantics (V2 design)
+## Target self-evolving planning (V2 design)
 
-Research, English, and school should not use one percent-complete model or three
-separate planners. Describe work with orthogonal semantics:
+Research, English and school use one planner with orthogonal task semantics rather
+than one percent-complete model or separate planners:
 
 | Dimension | Values |
 |---|---|
@@ -86,36 +86,56 @@ separate planners. Describe work with orthogonal semantics:
 | uncertainty | `LOW`, `MEDIUM`, `HIGH` |
 | interruptibility | `LOW`, `MEDIUM`, `HIGH` |
 | cognitive demand | `DEEP`, `NORMAL`, `LIGHT` |
-| minimum viable dose | optional bounded unit |
 | dependencies | explicit predecessor/waiting/ready graph |
+| learned duration | P50/P80, confidence and immutable model revision |
+| experienced pressure | 0 effortless .. 4 extreme plus `UNKNOWN` |
 
-Research is normally milestone/dependency driven, high-uncertainty, and deep. A
-broad milestone must expose one executable next action: read, implement, run,
-inspect, analyze, write, or unblock. A running remote experiment may wait while
-another ready analysis/writing action is scheduled.
+No domain has a fixed daily minimum. A valid day may contain no research, English
+or course work if that is the user's choice and hard facts allow it.
 
-English is accumulation driven. Completion is the configured duration, quantity,
-or repetition dose. A comprehension report is a noisy optional outcome used to
-select future modality; it does not retroactively fail completed practice.
+Research is milestone/dependency driven and exposes one executable action such as
+read, implement, run, inspect, analyze, write or unblock. Repeated valid attempts
+can be productive without visible progress. English is duration/quantity/repetition
+accumulation; comprehension is optional noisy feedback, not completion. Classes and
+exam sittings are fixed; assignments and exam preparation are deadline work.
 
-Classes and exam sittings are fixed events. Assignments and exam preparation are
-deadline work. Travel, preparation, and submission are explicit instead of hidden
-scheduling costs.
+### Next-day schedule advice
 
-### Anti-collapse replan
+The user submits a complete time-to-task plan. The self-evolution module snapshots
+the selected learning revision, predicts duration distribution and pressure,
+checks hard facts/dependencies/total time, detects under-allocation or pressure
+clustering, and returns the smallest explained `ScheduleAdvice`. It preserves both
+the user's estimate and learned P50/P80. Advice may say the plan is reasonable and
+never silently changes it. A user-authenticated `CREATE_DAILY_PLAN` or
+`ACCEPT_SCHEDULE_ADVICE` may create the first authoritative plan for a day; neither
+operation may replace an existing plan.
 
-Replanning is a primary loop. Starting from Core `now`, preserve completed history,
-hard course/travel/meal/recovery facts, and still-valid near-term blocks; release
-flexible blocks made impossible by a changed hard fact with an audit reason. Select
-only dependency-ready work, match cognitive demand to explicit capacity, and keep a
-small stability cost for valid old blocks.
+The duration model learns from completed active minutes, wall time, interruptions,
+partial/censored Sessions and explicit progress/attempt feedback. It shrinks cold
+starts through global -> domain -> action subtype -> task profiles and records
+pre-update error. Experienced pressure is learned separately from objective
+deadline pressure and affects ordering/recovery spacing, not moral priority.
 
-Try the full feasible remainder first. If it is impossible, return an auditable
-`PARTIAL` minimum viable day rather than abandon the day: protected course
-commitments, essential meal/travel/recovery, mandatory deadline work, configured
-minimum English dose, then one ready research progress/unblock action where
-capacity remains. If even required work is infeasible, expose explicit tradeoffs;
-never mark an impossible plan feasible or fabricate completion.
+### Severe-deviation recommendation; user-only replan
 
-These semantics require a later contract ADR, migration, and contract tests before
-implementation. ADR-0005 defines the target and N-of-1 personalization.
+Core may project progress continuously but cannot automatically replan:
+
+1. compare elapsed/progress evidence with the learned block distribution;
+2. simulate recovery through permitted compression and whole flexible-block
+   deferment/removal;
+3. if the remainder is feasible, do not recommend replan;
+4. if fixed/required conflicts remain or the explicit severe threshold is crossed,
+   append a deduplicated `REPLAN_RECOMMENDED` explanation to Windows/iOS/Web;
+5. only a user-authenticated `REQUEST_REPLAN` naming the current plan ID/revision
+   invokes Planner to replace that immutable PlanVersion.
+
+The V2 cutover is explicit: non-user `EventOrchestrator.ingest` triggers produce
+status/recommendation only; the break endpoint records the break and release without
+calling `PlanService.insert_break`; and `/api/v1/plans/generate` cannot replace an
+existing plan or accept AI/service/sensor/device-only triggers. Each plan-creation or
+revision command requires the separate one-time `HUMAN_INTENT` envelope defined in
+ADR-0006; a device transport key alone is insufficient. AI, Windows background
+services and iOS background work cannot submit replan on the user's behalf. An
+infeasible remainder produces explicit conflicts/tradeoffs; it never fabricates
+completion.
+See ADR-0006 for estimator, advice, pressure and learning governance.

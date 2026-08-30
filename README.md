@@ -10,17 +10,18 @@ V1 never terminates processes, edits the registry/firewall, installs autostart,
 uses a camera/microphone, or enables real blocking. `dry_run=true` and
 `real_enforcement_enabled=false` are the shipped defaults.
 
-## Target three-part design
+## Target self-evolving three-part design
 
-The target personal topology hosts the authoritative LifeOS Core/PostgreSQL on the
-NAS, with specialist Windows and native iOS clients. Device clients use a
-constrained SSH NDJSON subsystem rather than a general shell; Web remains HTTPS.
-The design also defines research/English/course work semantics, a minimal
-human-state model, anti-collapse replanning, a complete intervention loop, and
-consented N-of-1 dimension experiments.
+The target personal topology hosts authoritative Core/PostgreSQL and a versioned
+self-evolution module on the NAS, with one integrated LifeOS Windows application
+and an Xcode-direct-installed native iOS client. Windows/iOS use a constrained SSH
+subsystem; Web remains HTTPS. V2 learns personal task-duration distributions and
+experienced pressure from feedback, advises on the user's next-day plan, models
+only current focus/fatigue/emotion, and can recommend—but never autonomously
+execute—replanning.
 
-This is proposed V2 architecture, not a V1 implementation claim. See
-[`docs/adr/0005-nas-windows-ios-topology.md`](docs/adr/0005-nas-windows-ios-topology.md).
+This is proposed V2 architecture, not a V1 implementation claim. See ADR-0005 and
+ADR-0006.
 
 ## Quick start with Docker Compose
 

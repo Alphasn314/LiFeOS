@@ -57,32 +57,46 @@ Docker Compose requires explicit database/API secrets and binds PostgreSQL, Core
 and Web published ports to `127.0.0.1`. The development credentials in
 `.env.example` are placeholders and must be replaced before startup.
 
-## Target NAS, SSH, and mobile boundary
+## Target NAS, SSH, camera, and real-enforcement boundary
 
-The V2 three-part topology uses a NAS-hosted Core behind trusted LAN or an
-authenticated VPN. Web uses a TLS gateway. Windows and native iOS use SSH only
-through a forced `lifeos-bridge` subsystem. Application keys cannot open a shell,
-PTY, SFTP, agent/X11 forwarding, port forwarding, or arbitrary filesystem access.
-Each Ed25519 key is independently enrolled, device-bound, scoped, rotated, revoked,
-and protected by Windows CNG/DPAPI or iOS Keychain/Secure Enclave. Clients pin the
-NAS host key. A QTS administrator session is an operator boundary, not an
-application credential.
+The V2 topology uses NAS Core behind the user's always-on authenticated VPN. Web
+uses a TLS gateway; Windows and iOS use a forced `lifeos-bridge` SSH subsystem.
+Device keys are paired out of band, pinned to the verified SongNAS host key,
+device-bound, scoped, rotated/revoked, and cannot open shell, PTY, SFTP, forwarding,
+arbitrary filesystem or database access.
 
-The bridge authenticates the SSH principal, replaces any claimed client identity
-with the enrolled identity, validates bounded NDJSON, and calls Core services.
-Clients never connect to PostgreSQL. Production exposes no PostgreSQL host port,
-rejects blank/default authentication, restricts CORS to the deployed Web origin,
-redacts credentials, rate-limits ingress, and keeps database/API secrets out of
-images, repositories, URLs, notifications, and logs.
+AI and self-evolution outputs are typed proposals. They never become code, shell,
+registry/firewall input, leases, blocklists, retention changes, Emergency behavior
+or user replan commands. Learning model revisions are immutable, validated,
+audited, selectable and rollback-capable.
 
-iOS push payloads contain only an opaque wake/event identifier and expiry. Push
-delivery is neither authorization nor committed state. Raw process/title evidence,
-human-state reports, experiments, and backups inherit explicit retention and
-access policies; experiment features expire sooner than audit facts. Device
-credentials authorize API scopes, while `DeviceRoleLease` remains a separate,
-Core-issued domain authorization. Neither a credential, NAS availability, VPN,
-nor a lease completes the missing real-enforcement guard.
+LifeOS Windows may eventually reuse transactional hosts/HKLM URL policy and exact
+process termination from the user's V4.2 controller. Those actions stay disabled
+until target/Session/commitment/state/TTL/idempotency/blocklist/duration/online
+Core+device/lease/capability/rollback/audit guards and every Emergency/rest/restart
+failure test pass. Local Emergency is immediate and has no phrase, AI or network
+precondition.
 
+iOS camera use is explicit, foreground-only and on-device. AVFoundation/Vision
+buffers are throttled and immediately discarded. No frame, thumbnail, video,
+embedding, face identity, emotion, document content or crash attachment is stored
+or uploaded. Only bounded presence/orientation/away-duration/coverage/confidence/
+validity/reason evidence leaves the Vision boundary. Denial, suspension, occlusion,
+phone removal, failure or low confidence is `UNKNOWN`.
+
+With a free Apple Personal Team, V2 uses local `UserNotifications`; APNs is not a
+required or guaranteed channel. Lock-screen text is generic. Windows remains the
+independent reminder fallback.
+
+Personal histories, summaries, task profiles, model/plan/Session/audit revisions
+are retained permanently by user decision and partitioned by date. Detailed
+decision context reads the latest 72 hours by default. Camera frames never enter
+retention. High-frequency evidence is encrypted, growth-monitored, exportable and
+kept out of ordinary AI prompts. Test/fixture data is deleted after formal release
+freeze.
+
+Same-NAS snapshots/local copies are one failure domain and must be labelled as such;
+they are not disaster recovery against total NAS loss.
 
 ## V1 security limitations
 

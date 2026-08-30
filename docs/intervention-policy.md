@@ -67,7 +67,7 @@ Discipline Controller V4.2. Purpose and intensity remain separate:
 | 1 | tray/native light reminder |
 | 2 | native choice: return, break, override, request replan, end |
 | 3 | optional friction using typed delay plus bounded site/process restriction |
-| 4 | user-selected Recovery design; not yet fixed |
+| 4 | selected R1: fail-open full release, then 10-minute restorative break |
 | 5 | explicit severe-deviation/replan recommendation; never automatic replan |
 
 NAS AI may choose check-in/reminder timing only within deterministic configurable
@@ -103,15 +103,15 @@ because online Core, Session, lease and preauthorization are mandatory for a har
 action. It never extends stale NAS restrictions; NAS rest/release wins when authority
 returns.
 
-### Friction and Recovery choices still requiring user selection
+### Selected first-release friction and Recovery
 
-Friction candidates are F1 notification/choice, F2 short delay plus typed reason,
-F3 the existing 60-second phrase plus configured site/process block, and F4 F3 plus
-Windows Hello local presence verification. Typed text authenticates intent only;
-it cannot change Core state or delay Emergency.
+The user selected F3: the existing 60-second typed phrase plus configured site/process
+restriction. F3 remains inert unless the complete NAS guard matrix passes, never
+delays Emergency, and cannot authorize Core state by typed text alone.
 
-Recovery candidates are R1 release all plus a 10-minute restorative break and
-return/replan/end choice (recommended first), R2 a user-confirmed 15-minute
-reduced-distraction allowlist with automatic expiry, or R3 no automated Recovery
-in the first integrated release. Emergency, real blocking, break denial and
-user-only replan are never randomized.
+The user selected R1: release all restrictions synchronously and unconditionally,
+even when Core/Session/lease freshness checks fail. If Core is reachable, best-effort
+commit and schedule a 10-minute restorative break, then offer return/replan/end.
+Replan still requires the dedicated user-presence intent. F1/F2/F4 and R2/R3 remain
+documented alternatives. Emergency, real blocking, break denial and user-only replan
+are never randomized.

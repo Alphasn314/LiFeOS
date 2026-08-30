@@ -71,9 +71,10 @@
     daily plan; only `REQUEST_REPLAN` may replace the named current revision.
 29. No domain has a fixed daily quota. Schedule learning preserves user choices and
     returns advice, never a silent replacement.
-30. Personal history/profile/revision summaries remain date-partitioned and
-    permanent per user decision; camera frames never enter history and test data is
-    removed after release freeze.
+30. Personal history/profile/revision summaries and high-frequency raw evidence are
+    retained indefinitely by user decision under encryption, partitioning, capacity
+    alerts and export/deletion controls; camera frames never enter history and test
+    data is removed after release freeze.
 31. Device transport authentication is insufficient for plan creation or revision.
     A fresh, one-time, OS-presence-confirmed `HUMAN_INTENT` capability is required;
     AI, service, sensor and ordinary device principals are denied.

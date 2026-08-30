@@ -88,12 +88,13 @@ With a free Apple Personal Team, V2 uses local `UserNotifications`; APNs is not 
 required or guaranteed channel. Lock-screen text is generic. Windows remains the
 independent reminder fallback.
 
-Personal histories, summaries, task profiles, model/plan/Session/audit revisions
-are retained permanently by user decision and partitioned by date. Detailed
-decision context reads the latest 72 hours by default. Camera frames never enter
-retention. High-frequency evidence is encrypted, growth-monitored, exportable and
-kept out of ordinary AI prompts. Test/fixture data is deleted after formal release
-freeze.
+Personal histories, summaries, task profiles, model/plan/Session/audit revisions and
+high-frequency raw evidence are retained indefinitely by explicit user selection and
+partitioned by date. Detailed decision context reads the latest 72 hours by default.
+Raw evidence is encrypted, capacity-alerted, growth-monitored, exportable/deletable
+by the user and kept out of ordinary AI prompts. Camera frames/video/embeddings and
+prohibited capture categories never enter retention. Test/fixture data is deleted
+after formal release freeze.
 
 Same-NAS snapshots/local copies are one failure domain and must be labelled as such;
 they are not disaster recovery against total NAS loss.

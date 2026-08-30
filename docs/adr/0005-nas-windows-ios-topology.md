@@ -205,7 +205,7 @@ EMERGENCY, terminal/no Session, stale authority, override and local Emergency
 synchronously release all owned restrictions. A watched work application cannot
 re-lock during rest.
 
-Friction F1--F4 and Recovery R1--R3 remain explicit user decisions in ADR-0006.
+ADR-0006 selects F3 friction and R1 Recovery for the first integrated release.
 Emergency, real block, break denial and user-only replan are never randomized.
 
 ## SSH constrained protocol

@@ -116,6 +116,11 @@ starts through global -> domain -> action subtype -> task profiles and records
 pre-update error. Experienced pressure is learned separately from objective
 deadline pressure and affects ordering/recovery spacing, not moral priority.
 
+The selected scheduling policy uses P80 for high-uncertainty research and P50 for
+divisible low-pressure work, while displaying alternatives. Initial research
+progress adapters cover experiment execution, code development, paper reading and
+research writing; they record typed progress and meaningful attempts, not content.
+
 ### Severe-deviation recommendation; user-only replan
 
 Core may project progress continuously but cannot automatically replan:

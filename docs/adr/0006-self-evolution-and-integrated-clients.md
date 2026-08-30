@@ -185,7 +185,7 @@ guards.
 |---|---|---|
 | River `BayesianLinearRegression` 0.26.1 @ `64285b9` | BSD-3-Clause, active | `ADAPT`: reproduce the bounded online predictive-distribution behavior; do not add the heavy NumPy/SciPy/Narwhals/Rust package |
 | River adaptive Hoeffding tree | BSD-3-Clause | `STUDY_ONLY`: bounded-memory/drift pattern; pressure stays advisory and simpler first |
-| local Self Discipline Controller V4.2 | user-owned request, third-party notices present, no top-level license | integration source; record explicit provenance and preserve MIT/BSD/HPND/LGPL/PyInstaller notices before copying |
+| local Self Discipline Controller V4.2 | user-confirmed original project; private LifeOS-use authorization selected; third-party notices present | `ADAPT`: repository owner authorizes copying, modifying and building inside their private LifeOS project; no public redistribution grant; preserve all MIT/BSD/HPND/LGPL/PyInstaller notices |
 | H.NotifyIcon @ `61a5132` | MIT, active | adopt only if LifeOS Windows moves to WPF/WinUI; current Python tray already works |
 | Velopack 1.2.0 | MIT, active | future signed installer/update channel; automatic apply stays off until rollback tests |
 | Microsoft WFPSampler | MS-PL, driver sample | `STUDY_ONLY`; no custom kernel blocker |
@@ -233,8 +233,8 @@ Use a bounded Bayesian linear/log-duration predictor inspired by River:
   non-finite/outlier updates;
 - optional smoothing handles gradual concept drift;
 - expose P50, P80, evidence count, effective weight, confidence and reason codes;
-- schedule advice displays candidate quantiles such as P50, P65 and P80, but no
-  quantile becomes an operational default until the user selects the risk policy;
+- use P80 for high-uncertainty research and P50 for divisible low-pressure work, as
+  selected by the user; always display both the selected and alternative quantiles;
 - limit feature dimension because covariance update is quadratic;
 - prequentially record forecast error before updating the model.
 
@@ -397,27 +397,22 @@ Unlock choices become typed LifeOS intents:
 - end/abort Session;
 - immediate local Emergency Release (no phrase/network requirement).
 
-The existing 60-second random typed phrase can be one serious-friction option, but
-it cannot delay Emergency and typed text alone cannot authorize a NAS state change.
+The selected first-release friction is F3: the existing 60-second random typed
+phrase plus configured site/process restriction. F3 is not independent authority:
+the restriction remains unreachable until every NAS hard-action guard passes. The
+phrase cannot delay Emergency, and typed text alone cannot authorize a NAS state
+change.
 
-Proposed friction choices for discussion:
+The selected first-release Recovery is R1: synchronously and unconditionally release
+all restrictions, including when hard-action authority is stale or unavailable.
+When Core is reachable, best-effort commit and schedule a 10-minute restorative
+break, then ask the user to return, request replan, or end the Session. Replan still
+requires the separate `HUMAN_INTENT` path.
 
-- F1: notification plus one explicit choice;
-- F2: short delay plus typed reason;
-- F3: existing 60-second phrase plus configured site/process block;
-- F4: Windows Hello local presence check in addition to F3 (authenticates local user
-  only; all LifeOS guards still apply).
-
-Proposed Recovery choices:
-
-- R1 (recommended first): release all restrictions, schedule a 10-minute restorative
-  break, then ask return/replan/end;
-- R2: user-confirmed 15-minute reduced-distraction mode with only an allowlist and
-  automatic expiry;
-- R3: omit automated Recovery in the first integrated release.
-
-No friction/Recovery arm is randomized with real enforcement. User must choose the
-initial option before implementation.
+F1 notification/choice, F2 short delay/reason, F4 F3 plus Windows Hello, R2
+user-confirmed 15-minute allowlist, and R3 no automated Recovery remain documented
+alternatives, not active first-release policy. No friction/Recovery arm is randomized
+with real enforcement.
 
 ## iOS direct-install design
 
@@ -536,10 +531,11 @@ safety ceiling even when AI chooses fewer or differently timed prompts.
   sorted/partitioned by date;
 - camera frames never exist as retained personal data;
 - test/fixture data is deleted after the formal release is frozen;
-- high-frequency raw-evidence retention is unresolved. No V2 gate may require
-  indefinite or finite retention until the user selects one. Any selected policy
-  must be explicit, encrypted, date-partitioned, growth-monitored, exportable and
-  excluded from ordinary prompts;
+- high-frequency raw evidence is retained indefinitely by explicit user selection.
+  It must be encrypted, date-partitioned, growth-monitored, capacity-alerted,
+  exportable/deletable by the user, excluded from ordinary prompts, and never include
+  camera frames, video, embeddings, keystrokes, clipboard, screenshots, microphone
+  or content surveillance;
 - same-NAS snapshots/local copies are implemented as requested but remain one failure
   domain. They protect against some deletion/rollback events, not NAS theft, fire,
   filesystem corruption or total device loss. The product must label disaster
@@ -560,20 +556,19 @@ safety ceiling even when AI chooses fewer or differently timed prompts.
    evidence; complete direct-device smoke.
 8. Add VPN production profile, retention partitions, local backup/snapshot and
    maintenance jobs.
-9. Discuss and select friction/Recovery options; only then consider enabling the
-   real adapter.
+9. Implement the selected F3 friction and R1 Recovery only after the guard/failure
+   suite passes; keep real enforcement feature-flagged off until then.
 
 ## Remaining explicit decisions
 
-- choose F1/F2/F3/F4 friction for the first integrated Windows release;
-- choose R1/R2/R3 Recovery;
 - confirm the VPN hostname/MagicDNS name reachable from iPhone/Windows;
-- confirm whether indefinite raw evidence is intended after seeing storage/privacy
-  cost, or whether permanent summaries plus finite raw evidence are acceptable;
-- choose the initial severe-deviation threshold and P50/P80 scheduling risk policy;
-- choose the first progress adapters for research, English and course work;
-- record an explicit license/provenance statement for the user's original controller
-  source before copying it into the repository.
+- choose the initial severe-deviation recommendation threshold.
+
+Selected on 2026-08-30: F3 friction; R1 Recovery; P80 high-uncertainty research and
+P50 divisible low-pressure scheduling; experiment, code, paper-reading and research-
+writing progress adapters; indefinite raw-evidence retention under the safeguards
+above; and private LifeOS-only authorization for the user's original Controller
+source. These choices do not enable real enforcement by themselves.
 
 ## Consequences
 
@@ -581,5 +576,6 @@ The design becomes more adaptive without making AI sovereign. It reuses the exis
 serious Windows controller instead of rebuilding it, while placing real actions
 behind the existing LifeOS command boundary. It supports free-signing iOS constraints
 honestly and treats camera output as transient on-device evidence. The cost is new
-persistence, migrations, model governance, a substantial Windows merge, an Xcode
-client, and explicit unresolved friction/Recovery choices.
+persistence, indefinite raw-evidence capacity/privacy governance, migrations, model
+governance, a substantial Windows merge, an Xcode client, and explicit VPN/severe-
+threshold decisions.

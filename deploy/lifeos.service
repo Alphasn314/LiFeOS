@@ -1,0 +1,14 @@
+[Unit]
+Description=LifeOS daily Feishu reminders
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=%h/lifeos
+ExecStart=/usr/bin/python3 %h/lifeos/lifeos.py run
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=default.target
